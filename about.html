@@ -44,6 +44,14 @@
             transform: scale(1.9); 
             width: 100%; height: 100%;
         }
+
+        /* Mobile Menu Fix */
+        #mobile-menu { 
+            display: none; 
+        }
+        #mobile-menu.active { 
+            display: block !important; 
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -67,17 +75,41 @@
             <div class="hidden lg:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-gray-500">
                 <a href="index.html" class="hover:text-[#B8977E] transition-colors">Home</a>
                 <a href="#" class="text-[#B8977E] border-b-2 border-[#B8977E] pb-1">About Stylist</a>
-                <a href="index.html#services" class="hover:text-[#B8977E] transition-colors">Services</a>
-                <a href="index.html#reviews" class="hover:text-[#B8977E] transition-colors">Reviews</a>
+                <a href="treatments.html" class="hover:text-[#B8977E] transition-colors">Services</a>
+                <a href="results.html" class="hover:text-[#B8977E] transition-colors">Reviews</a>
             </div>
 
             <div class="flex items-center gap-4">
                 <a href="tel:9699496170" class="hidden sm:flex items-center gap-2 border-2 border-gray-900 text-gray-900 px-6 py-2 rounded-md font-bold hover:bg-gray-50 transition text-xs uppercase tracking-widest">
                     <i class="fas fa-phone-alt"></i> Call
                 </a>
-                <a href="index.html#booking" class="bg-gray-900 text-white px-7 py-2.5 rounded-md font-bold hover:bg-[#B8977E] shadow-lg text-xs transition-all text-center uppercase tracking-widest">
+                <a href="index.html#booking" class="bg-gray-900 text-white px-7 py-2.5 rounded-md font-bold hover:bg-[#B8977E] shadow-lg text-xs transition-all text-center uppercase tracking-widest hidden md:block">
                     Book Now
                 </a>
+                <button id="menu-btn" class="lg:hidden text-gray-900 focus:outline-none p-2 bg-gray-50 rounded-md">
+                    <i class="fas fa-bars text-xl" id="menu-icon"></i>
+                </button>
+            </div>
+
+            <div id="mobile-menu" class="absolute top-20 right-6 w-48 bg-white border border-gray-100 rounded-xl shadow-2xl p-2 z-[60]">
+                <div class="flex flex-col text-[11px] font-bold uppercase tracking-widest text-gray-600">
+                    <a href="index.html" class="hover:bg-gray-50 text-gray-600 p-3 rounded-lg flex items-center gap-3">
+                        <i class="fas fa-home w-4"></i> Home
+                    </a>
+                    <a href="about.html" class="hover:bg-gray-50 text-[#B8977E] p-3 rounded-lg flex items-center gap-3">
+                        <i class="fas fa-cut w-4"></i> About
+                    </a>
+                    <a href="treatments.html" class="hover:bg-gray-50 hover:text-[#B8977E] p-3 rounded-lg flex items-center gap-3">
+                        <i class="fas fa-list w-4"></i> Services
+                    </a>
+                    <a href="results.html" class="hover:bg-gray-50 hover:text-[#B8977E] p-3 rounded-lg flex items-center gap-3">
+                        <i class="fas fa-star w-4"></i> Stories
+                    </a>
+                    <div class="h-[1px] bg-gray-100 my-1"></div>
+                    <a href="index.html#booking" class="text-[#B8977E] p-3 flex items-center gap-3">
+                        <i class="fas fa-calendar-check w-4"></i> Book Now
+                    </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -192,5 +224,27 @@
         <p class="text-gray-500 text-[10px] uppercase tracking-[0.3em] mt-3">© 2026 Sufiyan Hair Studio | Kalyan West</p>
     </footer>
 
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            mobileMenu.classList.toggle('active');
+            if (mobileMenu.classList.contains('active')) {
+                menuIcon.classList.replace('fa-bars', 'fa-times');
+            } else {
+                menuIcon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+                mobileMenu.classList.remove('active');
+                menuIcon.classList.replace('fa-times', 'fa-bars');
+            }
+        });
+    </script>
 </body>
 </html>
