@@ -3,337 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Reshma S. Verma | Skin, Hair & Aesthetic Clinic</title>
+    <title>Sufiyan Hair Studio | Professional Salon Kalyan West</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <style>
-        html { scroll-behavior: smooth; }
-        .gradient-text { background: linear-gradient(90deg, #be185d, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
         
+        html { scroll-behavior: smooth; font-family: 'Inter', sans-serif; }
+        
+        /* Professional Salon Theme Palette */
+        :root {
+            --bg-light: #F9F9F9;
+            --text-main: #222222;
+            --accent-gold: #B8977E; /* Sophisticated champagne gold */
+            --dark-panel: #1A1A1A;
+        }
+
+        body { background-color: var(--bg-light); color: var(--text-main); }
+
         .unified-hero-bg { 
-            background: linear-gradient(rgba(255,255,255,0.92), rgba(255,255,255,0.92)), 
-            url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=60&w=1200'); 
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
+            background: linear-gradient(rgba(249, 249, 249, 0.92), rgba(249, 249, 249, 0.97)), 
+            url('https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=1200'); 
+            background-size: cover; background-position: center; background-attachment: fixed;
         }
         
-        .hover-scale { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .hover-scale:hover { transform: translateY(-5px); }
+        .hover-scale { transition: all 0.3s ease-in-out; }
+        .hover-scale:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
         
+        /* Premium Dropdown Styling (Preserved Technical Logic) */
+        select {
+            background-color: #2A2A2A !important;
+            color: #ffffff !important;
+            cursor: pointer;
+            padding: 16px;
+            border-bottom: 2px solid var(--accent-gold) !important;
+        }
+        select option { background-color: #ffffff !important; color: #1a1a1a !important; padding: 15px !important; font-weight: 600; }
+        select option[disabled] { color: #9ca3af !important; font-style: italic; background-color: #f3f4f6 !important; }
+        select:focus { outline: none; border-color: #ffffff !important; }
+        
+        /* --- MOBILE MENU FIXES (UNTOUCHED LOGIC) --- */
         #thank-you-page { display: none; }
-        .scroll-mt-20 { scroll-margin-top: 5rem; }
+        #mobile-menu { display: none; transform-origin: top right; transition: all 0.2s ease-out; opacity: 0; transform: scale(0.95) translateY(-10px); }
+        #mobile-menu.active { display: block !important; opacity: 1; transform: scale(1) translateY(0); }
+        
+        /* Zoomed Centre Logo */
+        .zoom-centre-logo { overflow: hidden; background-color: white; border: 4px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .zoom-centre-logo img {
+            object-fit: contain; 
+            object-position: center;
+            transform: scale(1.3999); 
+            width: 100%; height: 100%;
+        }
 
-        .testimonial-card { position: relative; overflow: hidden; }
-        .testimonial-card::before {
-            content: "\f10d";
-            font-family: "Font Awesome 6 Free";
-            font-weight: 900;
-            position: absolute;
-            top: -10px;
-            right: 20px;
-            font-size: 80px;
-            color: rgba(219, 39, 119, 0.05);
+        .section-title { font-weight: 800; text-transform: uppercase; letter-spacing: -0.02em; }
+
+        /* Swiper 3D Carousel Custom CSS */
+        .swiper-container {
+            width: 100%;
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+        .swiper-slide {
+            background-position: center;
+            background-size: cover;
+            width: 320px; 
+            border-radius: 1rem;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+        @media (min-width: 768px) {
+            .swiper-slide { width: 400px; } 
         }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-900 antialiased">
+<body class="antialiased">
 
-    <nav class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <a href="index.html" class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-pink-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-pink-200">
-                        <i class="fas fa-hand-holding-medical text-xl"></i>
-                    </div>
-                    <div class="flex flex-col">
-                        <span class="font-black text-xl tracking-tighter uppercase text-slate-900 leading-none">
-                            Dr. Reshma's <span class="text-pink-600 italic">Clinic</span>
-                        </span>
-                        <span class="text-[9px] font-bold tracking-[0.3em] text-slate-400 uppercase mt-1">Ambarnath East</span>
-                    </div>
-                </a>
+<nav class="bg-white/90 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between relative">
+        <a href="index.html" class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-black rounded-lg flex items-center justify-center text-white">
+                <i class="fas fa-cut text-lg"></i>
             </div>
-
-            <div class="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-slate-500">
-                <button onclick="manualScroll('about')" class="text-pink-600 transition-colors">Home</button>
-                <a href="about.html" class="hover:text-pink-600 transition-colors">About</a>
-                <button onclick="manualScroll('treatments')" class="hover:text-pink-600 transition-colors uppercase">Treatments</button>
-                <a href="results.html" class="hover:text-pink-600 transition-colors">Results</a>
+            <div class="flex flex-col">
+                <span class="font-extrabold text-xl tracking-tight uppercase text-gray-900 leading-none">
+                    Sufiyan <span class="text-[#B8977E]">Studio</span>
+                </span>
             </div>
+        </a>
 
-            <div class="flex items-center gap-4">
-                <a href="tel:9969590101" class="hidden sm:flex items-center gap-2 border-2 border-pink-600 text-pink-600 px-6 py-2.5 rounded-full font-bold hover:bg-pink-50 transition text-sm">
-                    <i class="fas fa-phone-alt"></i> Call Now
-                </a>
-                <button onclick="manualScroll('booking')" class="bg-pink-600 text-white px-7 py-3 rounded-full font-bold hover:bg-pink-700 shadow-lg shadow-pink-200 text-sm transition-all">
-                    Book Now
-                </button>
+        <div class="hidden lg:flex items-center gap-8 text-xs font-bold uppercase tracking-widest text-gray-500">
+            <a href="#about" class="hover:text-[#B8977E] transition-colors">Studio</a>
+            <a href="#treatments" class="hover:text-[#B8977E] transition-colors">Services</a>
+            <a href="#reviews" class="hover:text-[#B8977E] transition-colors">Transformations</a>
+            <a href="#booking" class="hover:text-[#B8977E] transition-colors text-black">Book Now</a>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <a href="#booking" class="bg-black text-white px-6 py-2.5 rounded-md font-bold hover:bg-[#B8977E] text-xs transition-colors">
+                Reserve
+            </a>
+            <button id="menu-btn" class="lg:hidden text-gray-900 focus:outline-none p-2 bg-gray-50 rounded-md">
+                <i class="fas fa-bars text-xl" id="menu-icon"></i>
+            </button>
+        </div>
+
+        <div id="mobile-menu" class="absolute top-20 right-6 w-48 bg-white border border-gray-100 rounded-xl shadow-xl p-2 z-[60]">
+            <div class="flex flex-col text-xs font-bold uppercase tracking-widest text-gray-600">
+                <a href="#about" class="hover:bg-gray-50 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-home w-4"></i> Studio</a>
+                <a href="#treatments" class="hover:bg-gray-50 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-list w-4"></i> Services</a>
+                <a href="#reviews" class="hover:bg-gray-50 p-3 rounded-lg flex items-center gap-3"><i class="fas fa-star w-4"></i> Reviews</a>
+                <a href="#booking" class="text-[#B8977E] p-3 flex items-center gap-3"><i class="fas fa-calendar-check w-4"></i> Book</a>
             </div>
         </div>
-    </nav>
+    </div>
+</nav>
 
-    <header id="about" class="unified-hero-bg border-b border-slate-200 pt-20 pb-28 scroll-mt-20">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="flex flex-col lg:flex-row items-center justify-between gap-16">
-                <div class="w-full lg:w-3/5 text-center lg:text-left order-2 lg:order-1">
-                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-50 border border-pink-100 mb-6">
-                        <span class="w-2 h-2 rounded-full bg-pink-500 animate-pulse"></span>
-                        <span class="text-pink-600 font-black tracking-widest text-[10px] uppercase">Aesthetic Expert</span>
-                    </div>
-                    <h1 class="text-5xl md:text-7xl font-black text-slate-900 leading-[1.05] tracking-tight mb-8">
-                        Expert Aesthetic Care in <span class="gradient-text uppercase">Ambarnath</span>
-                    </h1>
-                    <p class="text-slate-600 text-lg md:text-xl font-medium italic mb-10 leading-relaxed max-w-2xl">
-                        "Our motto: Best SKIN, HAIR & AESTHETIC treatments at competitive prices."
-                    </p>
-                    <div class="flex flex-col sm:flex-row items-center gap-6">
-                        <a href="https://wa.me/919969590101" target="_blank" class="w-full sm:w-auto bg-green-600 text-white px-10 py-5 rounded-2xl font-black flex items-center justify-center gap-3 hover-scale shadow-xl shadow-green-100 transition">
-                            <i class="fab fa-whatsapp text-2xl"></i> Free Consultation
-                        </a>
-                        <a href="results.html" class="w-full sm:w-auto bg-white text-slate-900 border-2 border-slate-200 px-10 py-5 rounded-2xl font-black hover:bg-slate-50 transition uppercase text-sm tracking-widest shadow-sm flex items-center justify-center">
-                            View Case Studies
-                        </a>
-                    </div>
+<header id="about" class="unified-hero-bg border-b border-gray-100 pt-20 pb-28 scroll-mt-20">
+    <div class="max-w-6xl mx-auto px-6 text-center lg:text-left">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-16">
+            <div class="w-full lg:w-3/5 order-2 lg:order-1">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 mb-6">
+                    <span class="text-gray-600 font-bold tracking-widest text-[10px] uppercase">Professional Hair Studio</span>
                 </div>
+                <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight mb-6">
+                    Crafting Your <br><span class="text-[#B8977E]">Signature Style</span>
+                </h1>
+                <p class="text-gray-600 text-lg font-light mb-10 leading-relaxed max-w-xl">
+                    Experience premium grooming, precision haircuts, and advanced hair therapy tailored specifically for you in Kalyan West.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <a href="#booking" class="w-full sm:w-auto bg-black text-white px-8 py-4 rounded-md font-bold hover:bg-[#B8977E] transition uppercase text-xs tracking-widest text-center">
+                        Book Appointment
+                    </a>
+                </div>
+            </div>
 
-                <div class="w-full lg:w-2/5 flex flex-col items-center order-1 lg:order-2">
-                    <div class="relative w-56 h-56 md:w-72 md:h-72 mb-8">
-                        <div class="absolute inset-0 bg-gradient-to-tr from-pink-500 to-indigo-500 rounded-full blur-2xl opacity-10 animate-pulse"></div>
-                        <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=400" alt="Dr. Reshma" class="relative w-full h-full rounded-full border-8 border-white shadow-2xl object-cover">
-                    </div>
-                    <div class="text-center">
-                        <h2 class="text-3xl font-black text-slate-900">Dr. Reshma S. Verma</h2>
-                        <p class="text-[10px] text-slate-400 uppercase font-black tracking-[0.3em] mt-3">Physician & Surgeon</p>
-                        <div class="flex flex-wrap justify-center gap-2 mt-6">
-                            <span class="bg-white/80 px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-black shadow-sm">BHMS</span>
-                            <span class="bg-white/80 px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-black shadow-sm">P.G.D.E.M.S</span>
-                            <span class="bg-white/80 px-3 py-1.5 rounded-lg border border-slate-200 text-[10px] font-black text-pink-700 shadow-sm">Reg: 46591</span>
-                        </div>
-                    </div>
+            <div class="w-full lg:w-2/5 flex flex-col items-center order-1 lg:order-2">
+                <div class="relative w-56 h-56 md:w-72 md:h-72 mb-6 zoom-centre-logo rounded-full"> 
+                    <img src="https://raw.githubusercontent.com/AnujAhinave/Medical-Clinic-/main/images%20(1).png" alt="Sufiyan Studio Logo">
+                </div>
+                <div class="text-center">
+                    <h2 class="text-2xl font-extrabold text-gray-900">Sufiyan Hair Studio</h2>
+                    <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest mt-2">Unisex Styling Experts</p>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <section id="treatments" class="py-32 bg-white scroll-mt-20">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="text-center mb-20">
-                <h2 class="text-4xl font-black text-slate-900 uppercase tracking-tight">Ambarnath's First Laser Center</h2>
-                <p class="text-slate-400 mt-2">Equipped with high-precision medical-grade machines</p>
+<section id="treatments" class="py-24 bg-white scroll-mt-20">
+    <div class="max-w-4xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl section-title text-gray-900">Featured Services</h2>
+            <p class="text-gray-500 mt-3 text-sm">A glimpse into our crafted grooming menu</p>
+        </div>
+
+        <div class="space-y-10">
+            <div class="group flex flex-col md:flex-row items-start md:items-center gap-6 border-b border-gray-100 pb-10 hover:border-[#B8977E] transition-colors">
+                <div class="w-full md:w-32 h-40 md:h-32 rounded-xl overflow-hidden shrink-0 shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1622286342621-4bd786c2447c?auto=format&fit=crop&q=80&w=400" alt="Skin Fade" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="flex-grow">
+                    <h4 class="font-bold text-lg text-gray-900 uppercase tracking-tight group-hover:text-[#B8977E] transition-colors">Signature Skin Fade</h4>
+                    <p class="text-gray-500 text-sm mt-2 max-w-lg leading-relaxed">Precision fade with expert scissor work on top, complete with professional styling and beard lineup.</p>
+                </div>
+                <div class="mt-2 md:mt-0 text-left md:text-right shrink-0">
+                    <span class="text-xl font-extrabold text-gray-900">₹250+</span>
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-1">30 Mins</p>
+                </div>
             </div>
-            <div class="grid md:grid-cols-3 gap-10">
-                <div class="p-10 rounded-[3rem] bg-slate-50 border border-slate-100 hover-scale">
-                    <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center mb-6"><i class="fas fa-magic"></i></div>
-                    <h4 class="font-black text-xl mb-4 uppercase">Laser Carbon Peel</h4>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-6">The 'Hollywood Glow' for instant skin brightening and pore refinement.</p>
-                    <a href="treatments.html" class="text-pink-600 font-bold text-xs uppercase tracking-widest hover:underline">Learn More →</a>
+
+            <div class="group flex flex-col md:flex-row items-start md:items-center gap-6 border-b border-gray-100 pb-10 hover:border-[#B8977E] transition-colors">
+                <div class="w-full md:w-32 h-40 md:h-32 rounded-xl overflow-hidden shrink-0 shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&q=80&w=400" alt="Women's Styling" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                 </div>
-                <div class="p-10 rounded-[3rem] bg-slate-50 border border-slate-100 hover-scale">
-                    <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center mb-6"><i class="fas fa-hand-sparkles"></i></div>
-                    <h4 class="font-black text-xl mb-4 uppercase">Laser Hair Reduction</h4>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-6">Painless, permanent solution for unwanted hair using world-class tech.</p>
-                    <a href="treatments.html" class="text-pink-600 font-bold text-xs uppercase tracking-widest hover:underline">Learn More →</a>
+                <div class="flex-grow">
+                    <h4 class="font-bold text-lg text-gray-900 uppercase tracking-tight group-hover:text-[#B8977E] transition-colors">Women's Restyle & Blowout</h4>
+                    <p class="text-gray-500 text-sm mt-2 max-w-lg leading-relaxed">Complete transformation cut, including a luxurious wash, deep conditioning mask, and voluminous blowout.</p>
                 </div>
-                <div class="p-10 rounded-[3rem] bg-slate-50 border border-slate-100 hover-scale">
-                    <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center mb-6"><i class="fas fa-eraser"></i></div>
-                    <h4 class="font-black text-xl mb-4 uppercase">Tattoo Removal</h4>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-6">Advanced laser technology for safe, scar-free tattoo clearance.</p>
-                    <a href="treatments.html" class="text-pink-600 font-bold text-xs uppercase tracking-widest hover:underline">Learn More →</a>
+                <div class="mt-2 md:mt-0 text-left md:text-right shrink-0">
+                    <span class="text-xl font-extrabold text-gray-900">₹500+</span>
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-1">60 Mins</p>
+                </div>
+            </div>
+
+            <div class="group flex flex-col md:flex-row items-start md:items-center gap-6 border-b border-gray-100 pb-10 hover:border-[#B8977E] transition-colors">
+                <div class="w-full md:w-32 h-40 md:h-32 rounded-xl overflow-hidden shrink-0 shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&q=80&w=400" alt="Keratin Treatment" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="flex-grow">
+                    <h4 class="font-bold text-lg text-gray-900 uppercase tracking-tight group-hover:text-[#B8977E] transition-colors">Keratin / Cysteine Therapy</h4>
+                    <p class="text-gray-500 text-sm mt-2 max-w-lg leading-relaxed">Intensive smoothing treatments designed to eliminate frizz, restore cuticular health, and add a mirror-like shine.</p>
+                </div>
+                <div class="mt-2 md:mt-0 text-left md:text-right shrink-0">
+                    <span class="text-xl font-extrabold text-gray-900">₹3000+</span>
+                    <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-1">120 Mins</p>
                 </div>
             </div>
         </div>
-    </section>
 
-    <section id="results" class="py-32 bg-slate-50 scroll-mt-20">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-4xl font-black text-slate-900 uppercase tracking-tight mb-20">Clinical Results</h2>
-            <div class="grid md:grid-cols-2 gap-12">
-                <div class="group bg-white p-6 rounded-[3.5rem] shadow-xl shadow-slate-200/60 border border-white hover-scale">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="relative rounded-[2.5rem] overflow-hidden aspect-[4/5] bg-slate-100">
-                            <img src="https://images.unsplash.com/photo-1598970434795-0c54fe7c0648?w=400" class="w-full h-full object-cover grayscale-[0.5]" alt="Before">
-                        </div>
-                        <div class="relative rounded-[2.5rem] overflow-hidden aspect-[4/5] bg-slate-100">
-                            <img src="https://images.unsplash.com/photo-1516549655169-df83a0774514?w=400" class="w-full h-full object-cover" alt="After">
-                        </div>
-                    </div>
-                    <h4 class="mt-8 px-4 font-black text-2xl text-slate-900 uppercase tracking-tighter">Laser Tattoo Clearance</h4>
-                </div>
-                <div class="group bg-white p-6 rounded-[3.5rem] shadow-xl shadow-slate-200/60 border border-white hover-scale">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="relative rounded-[2.5rem] overflow-hidden aspect-[4/5] bg-slate-100">
-                            <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400" class="w-full h-full object-cover grayscale-[0.5]" alt="Before">
-                        </div>
-                        <div class="relative rounded-[2.5rem] overflow-hidden aspect-[4/5] bg-slate-100">
-                            <img src="https://images.unsplash.com/photo-1600948836101-f9ffda59d250?w=400" class="w-full h-full object-cover" alt="After">
-                        </div>
-                    </div>
-                    <h4 class="mt-8 px-4 font-black text-2xl text-slate-900 uppercase tracking-tighter">Scalp Detox Therapy</h4>
-                </div>
-            </div>
-            <div class="mt-16 text-center">
-                <a href="results.html" class="bg-slate-900 text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-800 transition shadow-lg inline-block">View Full Gallery</a>
-            </div>
+        <div class="text-center mt-16">
+            <a href="https://wa.me/919699496170?text=Hi,%20I%20would%20like%20to%20see%20your%20full%20service%20catalogue." target="_blank" 
+               class="inline-block border-2 border-gray-900 text-gray-900 px-10 py-4 rounded-md font-bold hover:bg-gray-900 hover:text-white transition-all uppercase text-xs tracking-widest">
+                View Full Catalogue
+            </a>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="py-32 bg-white">
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
-                <div>
-                    <span class="text-pink-600 font-black text-[10px] uppercase tracking-[0.3em]">Voices of trust</span>
-                    <h2 class="text-4xl font-black text-slate-900 uppercase tracking-tight mt-2">What Our Patients Say</h2>
-                </div>
-                <div class="flex items-center gap-2 text-yellow-400 text-xl">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-                    <span class="text-slate-400 text-sm font-bold ml-2">4.9/5 Google Rating</span>
+<section id="reviews" class="py-24 bg-[#F9F9F9] border-y border-gray-100 overflow-hidden scroll-mt-20">
+    <div class="max-w-6xl mx-auto px-6 mb-10 text-center">
+        <h2 class="text-3xl md:text-4xl section-title text-gray-900">Client Transformations</h2>
+        <p class="text-gray-500 mt-3 text-sm">Real results. Real reviews.</p>
+    </div>
+
+    <div class="swiper mySwiper swiper-container">
+        <div class="swiper-wrapper">
+            
+            <div class="swiper-slide border border-gray-100">
+                <img src="https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&q=80&w=400" class="w-full h-64 object-cover" alt="Client 1">
+                <div class="p-6 text-center bg-white">
+                    <div class="flex justify-center text-[#B8977E] mb-3 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="text-gray-600 text-sm italic mb-4">"The balayage looks incredibly natural. The stylist perfectly understood the tone I wanted."</p>
+                    <h4 class="font-bold text-xs uppercase tracking-widest text-gray-900">— Sonia M.</h4>
                 </div>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="testimonial-card bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100 hover-scale">
-                    <p class="text-slate-600 italic leading-relaxed mb-8 relative z-10">
-                        "I was worried about tattoo removal pain, but Dr. Reshma made the process so comfortable. The results after 3 sessions are incredible."
-                    </p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center font-black text-pink-600">A</div>
-                        <div>
-                            <h5 class="font-black text-slate-900 text-sm uppercase">Anjali Sharma</h5>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">Tattoo Removal Patient</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="testimonial-card bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100 hover-scale">
-                    <p class="text-slate-600 italic leading-relaxed mb-8 relative z-10">
-                        "The Carbon Laser Peel is like magic for oily skin. I got an instant glow for my sister's wedding. Best aesthetic clinic in Ambarnath East."
-                    </p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center font-black text-pink-600">R</div>
-                        <div>
-                            <h5 class="font-black text-slate-900 text-sm uppercase">Rahul Verma</h5>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">Carbon Peel Patient</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="testimonial-card bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100 hover-scale">
-                    <p class="text-slate-600 italic leading-relaxed mb-8 relative z-10">
-                        "Excellent doctor who actually listens. My scalp dandruff issue was solved in just a month. Very professional care."
-                    </p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center font-black text-pink-600">P</div>
-                        <div>
-                            <h5 class="font-black text-slate-900 text-sm uppercase">Priya Nair</h5>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">Trichology Patient</p>
-                        </div>
-                    </div>
+            <div class="swiper-slide border border-gray-100">
+                <img src="https://images.unsplash.com/photo-1620331311520-246422ff82f9?auto=format&fit=crop&q=80&w=400" class="w-full h-64 object-cover" alt="Client 2">
+                <div class="p-6 text-center bg-white">
+                    <div class="flex justify-center text-[#B8977E] mb-3 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="text-gray-600 text-sm italic mb-4">"Best fade in Kalyan West. Very hygienic, professional, and the precision is unmatched."</p>
+                    <h4 class="font-bold text-xs uppercase tracking-widest text-gray-900">— Rahul K.</h4>
                 </div>
             </div>
+
+            <div class="swiper-slide border border-gray-100">
+                <img src="https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&q=80&w=400" class="w-full h-64 object-cover" alt="Client 3">
+                <div class="p-6 text-center bg-white">
+                    <div class="flex justify-center text-[#B8977E] mb-3 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="text-gray-600 text-sm italic mb-4">"My frizzy hair is completely transformed after the Keratin therapy. Highly recommended!"</p>
+                    <h4 class="font-bold text-xs uppercase tracking-widest text-gray-900">— Priya S.</h4>
+                </div>
+            </div>
+
+            <div class="swiper-slide border border-gray-100">
+                <img src="https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&q=80&w=400" class="w-full h-64 object-cover" alt="Client 4">
+                <div class="p-6 text-center bg-white">
+                    <div class="flex justify-center text-[#B8977E] mb-3 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="text-gray-600 text-sm italic mb-4">"A true luxury experience. They treat grooming like an art form here."</p>
+                    <h4 class="font-bold text-xs uppercase tracking-widest text-gray-900">— Sameer D.</h4>
+                </div>
+            </div>
+
         </div>
-    </section>
+        <div class="swiper-pagination mt-8 relative"></div>
+    </div>
+</section>
 
-    <section id="booking" class="py-32 bg-slate-900 scroll-mt-20">
-        <div class="max-w-3xl mx-auto px-6">
-            <div id="booking-container" class="bg-white/5 backdrop-blur-xl rounded-[3.5rem] border border-white/10 p-12">
-                <div id="booking-form">
-                    <h3 class="text-4xl font-black text-white text-center uppercase mb-12">Request Appointment</h3>
-                    <form onsubmit="handleBooking(event)" class="grid grid-cols-1 gap-8">
-                        <input type="text" placeholder="Full Name" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:border-pink-500 outline-none transition">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <input type="tel" placeholder="Mobile Number" required class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:border-pink-500 outline-none transition">
-                            <select class="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:border-pink-500 outline-none appearance-none">
-                                <option class="text-slate-900">Laser Treatment</option>
-                                <option class="text-slate-900">Skin Consultation</option>
-                                <option class="text-slate-900">Hair Therapy</option>
+<section id="booking" class="py-24 bg-[#111111] scroll-mt-20">
+    <div class="max-w-3xl mx-auto px-6">
+        <div id="booking-container" class="bg-[#1A1A1A] rounded-2xl border border-white/10 p-10 md:p-14 shadow-2xl">
+            <div id="booking-form-wrapper">
+                <h3 class="text-3xl font-extrabold text-white text-center uppercase mb-10 tracking-tight">
+                    Book <span class="text-[#B8977E]">Appointment</span>
+                </h3>
+                
+                <form id="clinic-booking-form" class="grid grid-cols-1 gap-6">
+                    <div class="relative group">
+                        <i class="fas fa-user absolute left-5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                        <input type="text" name="firstName" placeholder="FULL NAME" required 
+                               class="w-full bg-[#2A2A2A] border border-transparent rounded-lg pl-12 pr-6 py-4 text-white focus:border-[#B8977E] outline-none transition uppercase text-[10px] font-bold tracking-widest placeholder:text-gray-500">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="relative">
+                            <i class="fas fa-phone absolute left-5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                            <input type="tel" name="phone" placeholder="MOBILE NUMBER" required 
+                                   class="w-full bg-[#2A2A2A] border border-transparent rounded-lg pl-12 pr-6 py-4 text-white focus:border-[#B8977E] outline-none transition uppercase text-[10px] font-bold tracking-widest placeholder:text-gray-500">
+                        </div>
+                        <div class="relative">
+                            <i class="fas fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-gray-500"></i>
+                            <input type="email" name="email" placeholder="EMAIL ADDRESS" required 
+                                   class="w-full bg-[#2A2A2A] border border-transparent rounded-lg pl-12 pr-6 py-4 text-white focus:border-[#B8977E] outline-none transition uppercase text-[10px] font-bold tracking-widest placeholder:text-gray-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="relative">
+                            <i class="fas fa-calendar absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 z-10"></i>
+                            <select id="doctor-date" name="selected_date" required 
+                                    class="w-full border border-transparent rounded-lg pl-12 pr-6 py-4 outline-none appearance-none uppercase text-[10px] font-bold tracking-widest relative">
+                                <option value="">CHOOSE DATE</option>
                             </select>
                         </div>
-                        <button type="submit" class="w-full bg-pink-600 text-white font-black py-5 rounded-2xl hover:bg-pink-700 transition uppercase mt-6 shadow-xl shadow-pink-900/40">Confirm Request</button>
-                    </form>
-                </div>
-                <div id="thank-you-page" class="text-center py-10">
-                    <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white text-4xl mx-auto mb-8">
-                        <i class="fas fa-check"></i>
+                        <div class="relative">
+                            <i class="fas fa-clock absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 z-10"></i>
+                            <select id="doctor-time" name="selected_time" disabled required 
+                                    class="w-full border border-transparent rounded-lg pl-12 pr-6 py-4 outline-none appearance-none disabled:opacity-30 uppercase text-[10px] font-bold tracking-widest relative">
+                                <option value="">SELECT TIME</option>
+                            </select>
+                        </div>
                     </div>
-                    <h3 class="text-4xl font-black text-white uppercase">Request Sent!</h3>
-                    <p class="text-slate-400 mt-6 text-lg">Dr. Reshma's team will call you within 2-4 hours to confirm your slot.</p>
+
+                    <textarea name="description" placeholder="SERVICE REQUIRED (HAIRCUT, COLOR, ETC.)" required rows="3"
+                              class="w-full bg-[#2A2A2A] border border-transparent rounded-lg px-6 py-4 text-white focus:border-[#B8977E] outline-none transition uppercase text-[10px] font-bold tracking-widest placeholder:text-gray-500"></textarea>
+
+                    <button type="submit" id="submit-btn" 
+                            class="w-full bg-[#B8977E] text-white font-bold py-5 rounded-lg hover:bg-white hover:text-black transition-colors duration-300 uppercase mt-4 tracking-widest text-xs">
+                        Confirm Request
+                    </button>
+                </form>
+            </div>
+
+            <div id="thank-you-page" class="hidden text-center py-10">
+                <div class="w-20 h-20 bg-[#B8977E] rounded-full flex items-center justify-center text-white text-4xl mx-auto mb-6">
+                    <i class="fas fa-check"></i>
                 </div>
+                <h3 class="text-3xl font-extrabold text-white uppercase tracking-tight">Slot Locked</h3>
+                <p class="text-[#B8977E] mt-4 text-sm tracking-widest font-bold uppercase">We will WhatsApp you shortly.</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <section class="py-20 bg-white text-center">
-        <h2 class="text-3xl font-black uppercase mb-16">Find Us in Ambarnath</h2>
-        <div class="max-w-6xl mx-auto px-6">
-            <div class="rounded-[3rem] overflow-hidden shadow-2xl border-8 border-slate-50">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3768.123456789!2d73.18!3d19.2!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDEyJzAwLjAiTiA3M8KwMTAnNDguMCJF!5e0!3m2!1sen!2sin!4v1640000000000!5m2!1sen!2sin" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+<footer class="bg-[#0A0A0A] text-gray-400 py-16 border-t border-white/5">
+    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-12 text-center md:text-left">
+        <div>
+            <h3 class="font-bold text-lg mb-4 text-white uppercase tracking-tight">Sufiyan Studio</h3>
+            <p class="text-sm leading-relaxed mb-4">Shop 03, beside Soham Medical, DSK, Kalyan Nagri, Sanglewadi, Bhanusagar, Kalyan West</p>
+            <a href="tel:9699496170" class="text-lg font-bold text-white hover:text-[#B8977E] transition">+91 9699496170</a>
+        </div>
+        <div>
+            <h3 class="font-bold text-sm mb-4 uppercase tracking-widest text-white">Working Hours</h3>
+            <p class="text-sm mb-1">Tue - Sun: 11 AM - 9 PM</p>
+            <p class="text-[#B8977E] font-bold text-xs uppercase tracking-widest mt-2">Closed on Mondays</p>
+        </div>
+        <div>
+            <h3 class="font-bold text-sm mb-4 uppercase tracking-widest text-white">Follow Us</h3>
+            <div class="flex justify-center md:justify-start gap-6 text-xl mt-4">
+                <a href="https://www.instagram.com/sufi1602" target="_blank" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
-    </section>
+    </div>
+</footer>
 
-    <footer class="bg-[#0a1128] text-white py-24">
-        <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-16 text-center md:text-left">
-            <div>
-                <h3 class="font-bold text-xl mb-8 uppercase text-pink-500">Contact</h3>
-                <p class="font-bold text-lg mb-8">Ambarnath East, Maharashtra</p>
-                <a href="tel:9969590101" class="text-2xl font-black">+91 9969590101</a>
-            </div>
-            <div>
-                <h3 class="font-bold text-xl mb-8 uppercase text-pink-500">Hours</h3>
-                <p>Mon - Sat: 10 AM - 8 PM</p>
-                <p class="text-pink-500 font-bold mt-2">Sun: By Appointment</p>
-            </div>
-            <div>
-                <h3 class="font-bold text-xl mb-8 uppercase text-pink-500">Follow</h3>
-                <div class="flex justify-center md:justify-start gap-6 mt-6 text-2xl">
-                    <i class="fab fa-instagram hover:text-pink-500 transition cursor-pointer"></i>
-                    <i class="fab fa-facebook-f hover:text-pink-500 transition cursor-pointer"></i>
-                </div>
-            </div>
-        </div>
-    </footer>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-    <script>
-        // Smooth scroll with navbar offset
-        function manualScroll(sectionId) {
-            const section = document.getElementById(sectionId);
-            if (section) {
-                const navHeight = 80;
-                const targetPosition = section.getBoundingClientRect().top + window.pageYOffset - navHeight;
-                window.scrollTo({ top: targetPosition, behavior: 'smooth' });
+<script>
+    var swiper = new Swiper(".mySwiper", {
+        effect: "coverflow",
+        grabCursor: true,
+        centeredSlides: true,
+        slidesPerView: "auto",
+        loop: true,
+        autoplay: {
+            delay: 3000,
+            disableOnInteraction: false,
+        },
+        coverflowEffect: {
+            rotate: 40,
+            stretch: 0,
+            depth: 250,
+            modifier: 1,
+            slideShadows: true,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+        },
+    });
+</script>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyrtDk0ZrHCLN5z8GcA4L1jvGpmXD0GFPAraskh2uZNVoMZnUNodkD0sZwbn1G4K8ucEQ/exec";
+
+    const dateSelect = document.getElementById('doctor-date');
+    const timeSelect = document.getElementById('doctor-time');
+    const bookingForm = document.getElementById('clinic-booking-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+
+    let clinicSchedule = {};
+
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        mobileMenu.classList.toggle('active');
+        if (mobileMenu.classList.contains('active')) {
+            menuIcon.classList.replace('fa-bars', 'fa-times');
+        } else {
+            menuIcon.classList.replace('fa-times', 'fa-bars');
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+            mobileMenu.classList.remove('active');
+            menuIcon.classList.replace('fa-times', 'fa-bars');
+        }
+    });
+
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+    function formatAnyDate(dateInput) {
+        if (!dateInput) return "";
+        const d = new Date(dateInput);
+        if (!isNaN(d)) {
+            return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        }
+        return dateInput.toUpperCase();
+    }
+
+    function formatTime(timeInput) {
+        if (!timeInput) return "";
+        if (timeInput.toString().includes('1899') || timeInput.toString().includes('T')) {
+            const d = new Date(timeInput);
+            if (!isNaN(d)) {
+                return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
             }
         }
+        return timeInput.toString().toUpperCase();
+    }
 
-        // Form handler
-        function handleBooking(e) {
-            e.preventDefault();
-            document.getElementById('booking-form').style.display = 'none';
+    async function loadClinicSchedule() {
+        try {
+            dateSelect.innerHTML = '<option value="">SYNCING...</option>';
+            const response = await fetch(API_URL);
+            const data = await response.json();
+            clinicSchedule = {};
+            data.forEach(item => {
+                const cleanDate = formatAnyDate(item.date);
+                const cleanTime = formatTime(item.time); 
+                if (!clinicSchedule[cleanDate]) clinicSchedule[cleanDate] = [];
+                clinicSchedule[cleanDate].push({ time: cleanTime, status: item.status || "available" });
+            });
+            dateSelect.innerHTML = '<option value="">CHOOSE DATE</option>';
+            Object.keys(clinicSchedule).forEach(date => {
+                const opt = document.createElement('option');
+                opt.value = date; opt.textContent = date; dateSelect.appendChild(opt);
+            });
+        } catch (e) {
+            dateSelect.innerHTML = '<option value="">OFFLINE</option>';
+        }
+    }
+
+    dateSelect.addEventListener('change', (e) => {
+        const selectedDate = e.target.value;
+        timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
+        if (selectedDate && clinicSchedule[selectedDate]) {
+            timeSelect.disabled = false;
+            clinicSchedule[selectedDate].forEach(slot => {
+                const opt = document.createElement('option');
+                opt.value = slot.time;
+                if (slot.status.toLowerCase() === 'booked') {
+                    opt.textContent = `${slot.time} (BOOKED)`; opt.disabled = true;
+                } else { opt.textContent = slot.time; }
+                timeSelect.appendChild(opt);
+            });
+        } else { timeSelect.disabled = true; }
+    });
+
+    bookingForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "SENDING...";
+        const formData = new FormData(bookingForm);
+        const params = new URLSearchParams(formData).toString();
+        try {
+            await fetch(`${API_URL}?${params}`, { method: 'POST', mode: 'no-cors' });
+            document.getElementById('booking-form-wrapper').style.display = 'none';
             document.getElementById('thank-you-page').style.display = 'block';
-            manualScroll('booking');
+        } catch (err) {
+            document.getElementById('booking-form-wrapper').style.display = 'none';
+            document.getElementById('thank-you-page').style.display = 'block';
         }
+    });
 
-        // Logic for landing from About page
-        window.addEventListener('load', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const scrollTarget = urlParams.get('scroll');
-            
-            if (scrollTarget) {
-                // Wait for the browser to stabilize (hero images loading etc.)
-                setTimeout(() => {
-                    manualScroll(scrollTarget);
-                }, 400); 
-
-                // A safety second-check: In case layout shifted after 400ms
-                setTimeout(() => {
-                    const section = document.getElementById(scrollTarget);
-                    const currentTop = section.getBoundingClientRect().top;
-                    if (Math.abs(currentTop - 80) > 10) { // If more than 10px off
-                         manualScroll(scrollTarget);
-                    }
-                }, 1000);
-            }
-        });
-    </script>
+    loadClinicSchedule();
+</script>
 </body>
 </html>
