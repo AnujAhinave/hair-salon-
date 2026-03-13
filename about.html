@@ -3,133 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Dr. Reshma S. Verma | Skin & Hair Expert Ambarnath</title>
+    <title>About The Stylist | Sufiyan Hair Studio</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
-        html { scroll-behavior: smooth; }
-        .gradient-text { background: linear-gradient(90deg, #be185d, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
+        
+        html { scroll-behavior: smooth; font-family: 'Inter', sans-serif; }
+        
+        .luxury-font { font-family: 'Playfair Display', serif; }
+        
+        :root {
+            --bg-light: #F9F9F9;
+            --text-main: #222222;
+            --accent-gold: #B8977E; 
+        }
+
+        body { background-color: var(--bg-light); color: var(--text-main); }
+
+        .gradient-text { background: linear-gradient(90deg, #B8977E, #8A6D55); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Subtle Background Pattern */
         .bg-pattern { 
             background-color: #ffffff;
-            background-image: radial-gradient(#be185d 0.5px, transparent 0.5px);
+            background-image: radial-gradient(#B8977E 0.5px, transparent 0.5px);
             background-size: 20px 20px;
-            opacity: 0.03;
+            opacity: 0.05;
         }
+
         .hover-scale { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .hover-scale:hover { transform: translateY(-5px); }
+        .hover-scale:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); border-color: var(--accent-gold); }
+
+        /* Custom Logo Sizing */
+        .zoom-centre-logo { overflow: hidden; background-color: white; border: 1px solid #eee; }
+        .zoom-centre-logo img {
+            object-fit: cover; 
+            object-position: center;
+            transform: scale(1.9); 
+            width: 100%; height: 100%;
+        }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-900 antialiased">
+<body class="antialiased">
 
-    <nav class="bg-white/95 backdrop-blur-md border-b border-slate-100 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+    <nav class="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between relative">
             <div class="flex items-center gap-3">
-                <a href="index.html" class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-pink-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-pink-200">
-                        <i class="fas fa-hand-holding-medical text-xl"></i>
+                <a href="index.html" class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-full zoom-centre-logo shadow-sm">
+                        <img src="https://raw.githubusercontent.com/AnujAhinave/Medical-Clinic-/main/images%20(1).png" alt="Sufiyan Studio Logo">
                     </div>
                     <div class="flex flex-col">
-                        <span class="font-black text-xl tracking-tighter uppercase text-slate-900 leading-none">
-                            Dr. Reshma's <span class="text-pink-600 italic">Clinic</span>
+                        <span class="font-extrabold text-xl tracking-tight uppercase text-gray-900 leading-none">
+                            Sufiyan <span class="text-[#B8977E]">Studio</span>
                         </span>
-                        <span class="text-[9px] font-bold tracking-[0.3em] text-slate-400 uppercase mt-1">Ambarnath East</span>
+                        <span class="text-[9px] font-bold tracking-[0.3em] text-gray-400 uppercase mt-1">Kalyan West</span>
                     </div>
                 </a>
             </div>
 
-            <div class="hidden lg:flex items-center gap-8 text-[11px] font-black uppercase tracking-widest text-slate-500">
-                <a href="index.html" class="hover:text-pink-600 transition-colors">Home</a>
-                <a href="about.html" class="text-pink-600">About</a>
-                <a href="treatments.html" class="hover:text-pink-600 transition-colors">Treatments</a>
-                <a href="results.html" class="hover:text-pink-600 transition-colors">Results</a>
+            <div class="hidden lg:flex items-center gap-8 text-[11px] font-bold uppercase tracking-widest text-gray-500">
+                <a href="index.html" class="hover:text-[#B8977E] transition-colors">Home</a>
+                <a href="#" class="text-[#B8977E] border-b-2 border-[#B8977E] pb-1">About Stylist</a>
+                <a href="index.html#services" class="hover:text-[#B8977E] transition-colors">Services</a>
+                <a href="index.html#reviews" class="hover:text-[#B8977E] transition-colors">Reviews</a>
             </div>
 
             <div class="flex items-center gap-4">
-                <a href="tel:9969590101" class="hidden sm:flex items-center gap-2 border-2 border-pink-600 text-pink-600 px-6 py-2.5 rounded-full font-bold hover:bg-pink-50 transition text-sm">
-                    <i class="fas fa-phone-alt"></i> Call Now
+                <a href="tel:9699496170" class="hidden sm:flex items-center gap-2 border-2 border-gray-900 text-gray-900 px-6 py-2 rounded-md font-bold hover:bg-gray-50 transition text-xs uppercase tracking-widest">
+                    <i class="fas fa-phone-alt"></i> Call
                 </a>
-                <a href="index.html#booking" class="bg-pink-600 text-white px-7 py-3 rounded-full font-bold hover:bg-pink-700 shadow-lg shadow-pink-200 text-sm transition-all">
+                <a href="index.html#booking" class="bg-gray-900 text-white px-7 py-2.5 rounded-md font-bold hover:bg-[#B8977E] shadow-lg text-xs transition-all text-center uppercase tracking-widest">
                     Book Now
                 </a>
             </div>
         </div>
     </nav>
 
-    <section class="py-20 bg-white relative overflow-hidden">
+    <section class="py-20 bg-white relative overflow-hidden border-b border-gray-100">
         <div class="absolute inset-0 bg-pattern"></div>
         <div class="max-w-6xl mx-auto px-6 relative flex flex-col md:flex-row items-center gap-16">
+            
             <div class="md:w-1/2">
-                <div class="relative inline-block">
-                    <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&q=80&w=600" 
-                         class="rounded-[3rem] shadow-2xl border-8 border-white relative z-10" alt="Dr. Reshma S. Verma">
-                    <div class="absolute -bottom-6 -right-6 bg-slate-900 text-white p-8 rounded-[2rem] shadow-xl z-20">
-                        <p class="text-4xl font-black">10+</p>
-                        <p class="text-[10px] uppercase font-bold tracking-[0.2em] opacity-60">Years Experience</p>
+                <div class="relative inline-block w-full max-w-md mx-auto">
+                    <img src="https://raw.githubusercontent.com/AnujAhinave/hair-salon-/main/Screenshot%20From%202026-03-13%2008-00-59.png" 
+                         class="rounded-3xl shadow-2xl border-8 border-white relative z-10 w-full h-[500px] object-cover" alt="Master Stylist Sufiyan at Work">
+                    
+                    <div class="absolute -bottom-6 -right-6 md:-right-10 bg-[#111111] text-white p-8 rounded-2xl shadow-xl z-20 border border-gray-800">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-star text-[#B8977E] text-4xl"></i>
+                            <div>
+                                <p class="text-3xl font-extrabold">4.9/5</p>
+                                <p class="text-[10px] uppercase font-bold tracking-[0.2em] text-gray-400">Top Rated Stylist</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div class="md:w-1/2 text-center md:text-left">
-                <span class="text-pink-600 font-black uppercase tracking-widest text-xs">Empowering Your Skin & Hair Health</span>
-                <h1 class="text-5xl md:text-6xl font-black text-slate-900 mt-4 leading-tight tracking-tighter">Meet <span class="gradient-text uppercase">Dr. Reshma</span></h1>
-                <p class="text-slate-400 font-black mt-3 uppercase tracking-widest text-[11px]">BHMS • P.G.D.E.M.S • C.C.H • C.G.O (Reg: 46991)</p>
-                <p class="text-xl text-slate-600 mt-8 leading-relaxed italic font-medium">
-                    "My mission is to provide advanced clinical treatments that don't just mask the problem but heal the root cause using a preventive and conservative approach."
+                <span class="text-[#B8977E] font-bold uppercase tracking-widest text-xs">Master Stylist & Founder</span>
+                <h1 class="text-5xl md:text-6xl font-extrabold text-gray-900 mt-4 leading-tight tracking-tight luxury-font">
+                    Meet <span class="gradient-text italic">Sufiyan</span>
+                </h1>
+                
+                <p class="text-lg text-gray-600 mt-8 leading-relaxed font-light">
+                    As the creative force behind Sufiyan Hair Studio in Kalyan West, Sufiyan brings unmatched passion, artistic vision, and technical precision to every single client who sits in his chair.
                 </p>
+                <p class="text-lg text-gray-600 mt-4 leading-relaxed font-light">
+                    Specializing in razor-sharp skin fades, structural scissor cuts, and transformative color treatments, his philosophy is simple: a great hairstyle is the ultimate foundation of a person's confidence. He doesn't just cut hair; he engineers a look tailored specifically to your face shape and lifestyle.
+                </p>
+
+                <div class="grid grid-cols-3 gap-4 mt-10 border-t border-gray-200 pt-8">
+                    <div>
+                        <h4 class="text-3xl font-extrabold text-gray-900">5k+</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mt-1">Signature Cuts</p>
+                    </div>
+                    <div>
+                        <h4 class="text-3xl font-extrabold text-gray-900">8+</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mt-1">Years Crafting</p>
+                    </div>
+                    <div>
+                        <h4 class="text-3xl font-extrabold text-[#B8977E]">100%</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest font-bold mt-1">Commitment</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="py-24 bg-slate-50">
+    <section class="py-24 bg-[#F9F9F9]">
         <div class="max-w-6xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-extrabold text-gray-900 uppercase tracking-tight luxury-font">The Stylist Advantage</h2>
+                <p class="text-gray-500 mt-2 text-sm">Why clients keep coming back</p>
+            </div>
+
             <div class="grid md:grid-cols-3 gap-10">
-                <div class="bg-white p-10 rounded-[3rem] shadow-xl shadow-slate-200/50 border border-white hover-scale">
-                    <div class="w-14 h-14 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center text-2xl mb-8">
-                        <i class="fas fa-award"></i>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover-scale flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-gray-50 text-[#B8977E] rounded-full flex items-center justify-center text-2xl mb-6 shadow-inner border border-gray-100">
+                        <i class="fas fa-cut"></i>
                     </div>
-                    <h3 class="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Authority</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">As a certified Physician & Surgeon, Dr. Reshma established the first comprehensive Laser Skin Care center in Ambarnath.</p>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 uppercase tracking-tight">Precision Geometry</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">Mastering the angles of the head. Every cut is mathematically planned to grow out beautifully and remain easy to style at home.</p>
                 </div>
 
-                <div class="bg-white p-10 rounded-[3rem] shadow-xl shadow-slate-200/50 border border-white hover-scale">
-                    <div class="w-14 h-14 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center text-2xl mb-8">
-                        <i class="fas fa-user-graduate"></i>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover-scale flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-gray-50 text-[#B8977E] rounded-full flex items-center justify-center text-2xl mb-6 shadow-inner border border-gray-100">
+                        <i class="fas fa-eye"></i>
                     </div>
-                    <h3 class="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Credentials</h3>
-                    <ul class="text-slate-500 text-sm space-y-4 font-medium">
-                        <li><i class="fas fa-check-circle text-pink-500 mr-2"></i> BHMS Homeopathic Foundation</li>
-                        <li><i class="fas fa-check-circle text-pink-500 mr-2"></i> P.G.D.E.M.S Emergency Med</li>
-                        <li><i class="fas fa-check-circle text-pink-500 mr-2"></i> Specialized in Clinical Cosmetology</li>
-                    </ul>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 uppercase tracking-tight">Personalized Vision</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">No two clients are the same. Sufiyan takes the time to consult, listen, and recommend the exact style that elevates your unique features.</p>
                 </div>
 
-                <div class="bg-white p-10 rounded-[3rem] shadow-xl shadow-slate-200/50 border border-white hover-scale">
-                    <div class="w-14 h-14 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center text-2xl mb-8">
-                        <i class="fas fa-history"></i>
+                <div class="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 hover-scale flex flex-col items-center text-center">
+                    <div class="w-16 h-16 bg-gray-50 text-[#B8977E] rounded-full flex items-center justify-center text-2xl mb-6 shadow-inner border border-gray-100">
+                        <i class="fas fa-shield-alt"></i>
                     </div>
-                    <h3 class="text-2xl font-black text-slate-900 mb-4 uppercase tracking-tighter">Experience</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed">With over 10 years of clinical practice since 2009, treating thousands of patients across Kalyan and Ambarnath.</p>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 uppercase tracking-tight">Trusted Authority</h3>
+                    <p class="text-gray-500 text-sm leading-relaxed">Built on a foundation of hygiene, authentic premium products, and a deep respect for the craft of professional barbering and cosmetology.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <section class="py-24 bg-slate-900 text-white text-center relative overflow-hidden">
+    <section class="py-24 bg-[#111111] text-white text-center relative overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&q=80&w=1200')] opacity-[0.03] bg-cover bg-center"></div>
         <div class="max-w-4xl mx-auto px-6 relative z-10">
-            <h2 class="text-4xl md:text-5xl font-black mb-8 uppercase tracking-tighter leading-tight italic">Ready to Begin Your <br><span class="text-pink-600">Transformation?</span></h2>
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-8 uppercase tracking-tight leading-tight luxury-font">
+                Ready for Your <br><span class="text-[#B8977E] italic">Transformation?</span>
+            </h2>
+            <p class="text-gray-400 mb-10">Experience the difference of a true master stylist in Kalyan West.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-6">
-                <a href="index.html#booking" class="bg-pink-600 text-white px-12 py-5 rounded-2xl font-black shadow-xl shadow-pink-900/20 hover:bg-pink-700 transition-all uppercase text-sm tracking-widest text-center">
-                    Book Free Consultation
+                <a href="index.html#booking" class="bg-[#B8977E] text-white px-12 py-4 rounded-md font-bold hover:bg-white hover:text-black transition-colors uppercase text-sm tracking-widest shadow-lg">
+                    Reserve Your Chair
                 </a>
-                <a href="tel:9969590101" class="border-2 border-white/20 text-white px-12 py-5 rounded-2xl font-black hover:bg-white/10 transition-all uppercase text-sm tracking-widest text-center">
-                    Call: 9969590101
+                <a href="https://www.instagram.com/sufi1602" target="_blank" class="border-2 border-white/20 text-white px-12 py-4 rounded-md font-bold hover:bg-white/10 transition-colors uppercase text-sm tracking-widest flex items-center justify-center gap-2">
+                    <i class="fab fa-instagram"></i> See More Work
                 </a>
             </div>
         </div>
     </section>
 
-    <footer class="bg-[#0a1128] text-white py-16 border-t border-white/5 text-center">
-        <span class="font-black text-lg tracking-tighter uppercase">Dr. Reshma's <span class="text-pink-600 italic">Clinic</span></span>
-        <p class="text-slate-500 text-[10px] uppercase tracking-[0.4em] mt-4">© 2026 Dr. Reshma's Clinic | Ambarnath East</p>
+    <footer class="bg-black text-gray-400 py-12 border-t border-white/10 text-center">
+        <span class="font-extrabold text-lg tracking-tighter uppercase text-white luxury-font">Sufiyan <span class="text-[#B8977E] italic">Studio</span></span>
+        <p class="text-gray-500 text-[10px] uppercase tracking-[0.3em] mt-3">© 2026 Sufiyan Hair Studio | Kalyan West</p>
     </footer>
 
 </body>
