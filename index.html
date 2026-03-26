@@ -357,9 +357,8 @@
         }
     });
 
-
-    // ── NEW DYNAMIC BOOKING LOGIC (ALWAYS SHOW TAGS) ──────────
-    const API_URL = "https://script.google.com/macros/s/AKfycbw6yGWxp7ICYKoJbf0CCBvWYsy1PxaPnGgn77oBdruj3oQdPesfm3SxS1J-2C88G_IoZw/exec";
+    // ── NEW DYNAMIC BOOKING LOGIC ─────────────────────────────
+    const API_URL = "https://script.google.com/macros/s/AKfycbws97-uR5CexgACtiqmzLMPZX_tM922bIIT2kcBxLlDgz5aDetaVC1T5f1C5zlUHaDoZQ/exec";
 
     const serviceSelect = document.getElementById('service-select');
     const dateSelect  = document.getElementById('doctor-date');
@@ -370,13 +369,28 @@
     let allAvailableSlots = []; 
     const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
+    // BULLETPROOF DATE PARSER
     function parseDateFlexible(dateStr) {
         if (!dateStr) return null;
+        if (dateStr instanceof Date) return dateStr;
+
+        const str = String(dateStr).trim();
         let d;
-        if (typeof dateStr === 'string' && dateStr.includes("/")) {
-            const p = dateStr.split("/");
-            d = new Date(p[2], p[1] - 1, p[0]);
-        } else { d = new Date(dateStr); }
+        
+        if (str.includes("T")) {
+            d = new Date(str);
+        } else if (str.includes("/")) {
+            const p = str.split("/");
+            if (p[0].length === 4) d = new Date(p[0], p[1] - 1, p[2]);
+            else d = new Date(p[2], p[1] - 1, p[0]); // Assumes DD/MM/YYYY
+        } else if (str.includes("-")) {
+            const p = str.split("-");
+            if (p[0].length === 4) d = new Date(p[0], p[1] - 1, p[2]);
+            else d = new Date(str);
+        } else { 
+            d = new Date(str); 
+        }
+
         if (isNaN(d.getTime())) return null;
         d.setHours(0,0,0,0);
         return d;
@@ -397,21 +411,32 @@
             const data = rawData.slots || [];
             const settings = rawData.settings || {};
 
-            let startDate = settings.start ? parseDateFlexible(settings.start) : new Date();
-            if(!startDate) startDate = new Date();
+            // --- SMART DATE RANGE LOGIC ---
+            let currentMode = String(settings.mode || "").toLowerCase().trim();
+            
+            let startDate = new Date(); 
             startDate.setHours(0,0,0,0);
-
-            let daysToAdd = parseInt(settings.mode);
-            if (isNaN(daysToAdd)) daysToAdd = 30; 
-
             let endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + (daysToAdd - 1));
-            endDate.setHours(23,59,59,999);
+
+            if (currentMode === 'custom') {
+                let cStart = parseDateFlexible(settings.start);
+                let cEnd = parseDateFlexible(settings.end);
+                
+                if (cStart) startDate = cStart;
+                if (cEnd) endDate = cEnd;
+                else endDate.setDate(startDate.getDate() + 30);
+                
+            } else {
+                let daysToAdd = parseInt(currentMode);
+                if (isNaN(daysToAdd)) daysToAdd = 30; // Failsafe
+                endDate.setDate(startDate.getDate() + (daysToAdd - 1));
+            }
+            endDate.setHours(23,59,59,999); // Lock to midnight of end day
+            // --- END SMART LOGIC ---
 
             allAvailableSlots = []; 
-            let activeServices = new Set(); // Backup list
+            let activeServices = new Set();
 
-            // Build the slots inventory
             data.forEach(item => {
                 const sDate = parseDateFlexible(item.date);
                 if (!sDate) return;
@@ -442,28 +467,24 @@
                 }
             });
 
-            // --- THE FIX: ALWAYS SHOW OFFICIAL TAGS FROM VAULT ---
+            // Populate Dropdown
             serviceSelect.innerHTML = '<option value="">SELECT TREATMENT</option>';
             let tagsToDisplay = [];
             
-            // Try to pull the official list from the Settings tab first
             if (settings.services && settings.services.length > 0) {
                 tagsToDisplay = settings.services.map(s => s.toUpperCase());
             } else if (activeServices.size > 0) {
-                tagsToDisplay = Array.from(activeServices); // Fallback to whatever slots exist
+                tagsToDisplay = Array.from(activeServices); 
             }
 
-            // Build the Dropdown Menu
             if (tagsToDisplay.length > 0) {
                 tagsToDisplay.forEach(serviceName => {
                     if (serviceName !== "ALL") {
                         const opt = document.createElement('option');
-                        opt.value = serviceName; 
-                        opt.textContent = serviceName;
+                        opt.value = serviceName; opt.textContent = serviceName;
                         serviceSelect.appendChild(opt);
                     }
                 });
-                // Add a generic catch-all option
                 const optGeneral = document.createElement('option');
                 optGeneral.value = "ALL"; optGeneral.textContent = "GENERAL APPOINTMENT / ALL";
                 serviceSelect.appendChild(optGeneral);
