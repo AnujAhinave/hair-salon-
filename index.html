@@ -329,7 +329,7 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
-    // ── SWIPER ────────────────────────────────────────────────
+    // ── SWIPER & MENU (STAYS THE SAME) ────────────────────────
     var swiper = new Swiper(".mySwiper", {
         effect: "coverflow", grabCursor: true, centeredSlides: true,
         slidesPerView: "auto", loop: true,
@@ -338,27 +338,19 @@
         pagination: { el: ".swiper-pagination" },
     });
 
-    // ── MOBILE MENU ───────────────────────────────────────────
-    const menuBtn    = document.getElementById('menu-btn');
+    const menuBtn = document.getElementById('menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
-    const menuIcon   = document.getElementById('menu-icon');
+    const menuIcon = document.getElementById('menu-icon');
 
     menuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         mobileMenu.classList.toggle('active');
-        menuIcon.classList.toggle('fa-bars');
-        menuIcon.classList.toggle('fa-times');
-    });
-    document.addEventListener('click', (e) => {
-        if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
-            mobileMenu.classList.remove('active');
-            menuIcon.classList.add('fa-bars');
-            menuIcon.classList.remove('fa-times');
-        }
+        menuIcon.classList.toggle('fa-bars', !mobileMenu.classList.contains('active'));
+        menuIcon.classList.toggle('fa-times', mobileMenu.classList.contains('active'));
     });
 
-    // ── NEW DYNAMIC BOOKING LOGIC ─────────────────────────────
-    const API_URL = "https://script.google.com/macros/s/AKfycbws97-uR5CexgACtiqmzLMPZX_tM922bIIT2kcBxLlDgz5aDetaVC1T5f1C5zlUHaDoZQ/exec";
+    // ── GITHUB TO GOOGLE CONNECTION ENGINE ────────────────────
+    const API_URL = "https://script.google.com/macros/s/AKfycby9fYfb0FRTT6ge_7Bn4mDuvzH-kW00iVkX25u6PfPGWKVEZlISvJjd-w9gu1VlZLV3jA/exec";
 
     const serviceSelect = document.getElementById('service-select');
     const dateSelect  = document.getElementById('doctor-date');
@@ -369,234 +361,120 @@
     let allAvailableSlots = []; 
     const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
-    // BULLETPROOF DATE PARSER
     function parseDateFlexible(dateStr) {
         if (!dateStr) return null;
-        if (dateStr instanceof Date) return dateStr;
-
         const str = String(dateStr).trim();
-        let d;
-        
-        if (str.includes("T")) {
-            d = new Date(str);
-        } else if (str.includes("/")) {
+        let d = new Date(str);
+        if (str.includes("/")) {
             const p = str.split("/");
-            if (p[0].length === 4) d = new Date(p[0], p[1] - 1, p[2]);
-            else d = new Date(p[2], p[1] - 1, p[0]); // Assumes DD/MM/YYYY
-        } else if (str.includes("-")) {
-            const p = str.split("-");
-            if (p[0].length === 4) d = new Date(p[0], p[1] - 1, p[2]);
-            else d = new Date(str);
-        } else { 
-            d = new Date(str); 
+            d = (p[0].length === 4) ? new Date(p[0], p[1]-1, p[2]) : new Date(p[2], p[1]-1, p[0]);
         }
-
         if (isNaN(d.getTime())) return null;
         d.setHours(0,0,0,0);
         return d;
     }
 
-    // 1. FETCH DATA & POPULATE SERVICES
     async function loadClinicSchedule() {
         try {
-            serviceSelect.innerHTML = '<option value="">SYNCING SERVER...</option>';
-            dateSelect.innerHTML = '<option value="">CHOOSE SERVICE FIRST</option>';
-            dateSelect.disabled = true;
-            timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
-            timeSelect.disabled  = true;
-
+            serviceSelect.innerHTML = '<option value="">SYNCING SERVICES...</option>';
             const response = await fetch(API_URL + "?fetch=true");
-            const rawData  = await response.json();
+            const rawData = await response.json();
 
             const data = rawData.slots || [];
             const settings = rawData.settings || {};
+            const officialServices = settings.services || [];
 
-            // --- SMART DATE RANGE LOGIC ---
-            let currentMode = String(settings.mode || "").toLowerCase().trim();
-            
-            let startDate = new Date(); 
-            startDate.setHours(0,0,0,0);
+            // 1. POPULATE SERVICE DROPDOWN FROM EXCEL (Settings Col F)
+            serviceSelect.innerHTML = '<option value="">SELECT TREATMENT</option>';
+            if(officialServices.length > 0) {
+                officialServices.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.toUpperCase(); opt.textContent = s.toUpperCase();
+                    serviceSelect.appendChild(opt);
+                });
+            }
+
+            // 2. PROCESS SLOTS FOR FILTERING
+            let startDate = new Date(); startDate.setHours(0,0,0,0);
             let endDate = new Date(startDate);
 
-            if (currentMode === 'custom') {
-                let cStart = parseDateFlexible(settings.start);
-                let cEnd = parseDateFlexible(settings.end);
-                
-                if (cStart) startDate = cStart;
-                if (cEnd) endDate = cEnd;
-                else endDate.setDate(startDate.getDate() + 30);
-                
+            if (String(settings.mode).toLowerCase() === 'custom') {
+                startDate = parseDateFlexible(settings.start) || startDate;
+                endDate = parseDateFlexible(settings.end) || new Date(startDate.getTime() + 30*24*60*60*1000);
             } else {
-                let daysToAdd = parseInt(currentMode);
-                if (isNaN(daysToAdd)) daysToAdd = 30; // Failsafe
-                endDate.setDate(startDate.getDate() + (daysToAdd - 1));
+                endDate.setDate(startDate.getDate() + (parseInt(settings.mode) || 7));
             }
-            endDate.setHours(23,59,59,999); // Lock to midnight of end day
-            // --- END SMART LOGIC ---
 
-            allAvailableSlots = []; 
-            let activeServices = new Set();
-
-            data.forEach(item => {
+            allAvailableSlots = data.map(item => {
                 const sDate = parseDateFlexible(item.date);
-                if (!sDate) return;
+                if (!sDate || sDate < startDate || sDate > endDate) return null;
 
-                if (sDate >= startDate && sDate <= endDate) {
-                    const dKey = `${String(sDate.getDate()).padStart(2, '0')} ${months[sDate.getMonth()]} ${sDate.getFullYear()}`;
-                    
-                    let cleanTime = item.time;
-                    const pTime = new Date(item.time);
-                    if (!isNaN(pTime) && item.time.toString().includes('T')) {
-                        cleanTime = pTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-                    }
-                    
-                    const slotStatus = String(item.status || "available").toLowerCase();
-                    const slotService = item.service ? String(item.service).toUpperCase().trim() : "ALL";
-                    
-                    allAvailableSlots.push({
-                        dateKey: dKey,
-                        dateObj: sDate, 
-                        time: cleanTime,
-                        status: slotStatus,
-                        service: slotService
-                    });
-
-                    if(slotStatus !== 'booked' && slotStatus !== 'blocked') {
-                        activeServices.add(slotService);
-                    }
+                let cleanTime = item.time;
+                if (item.time.toString().includes('T')) {
+                    cleanTime = new Date(item.time).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
                 }
-            });
 
-            // Populate Dropdown
-            serviceSelect.innerHTML = '<option value="">SELECT TREATMENT</option>';
-            let tagsToDisplay = [];
-            
-            if (settings.services && settings.services.length > 0) {
-                tagsToDisplay = settings.services.map(s => s.toUpperCase());
-            } else if (activeServices.size > 0) {
-                tagsToDisplay = Array.from(activeServices); 
-            }
-
-            if (tagsToDisplay.length > 0) {
-                tagsToDisplay.forEach(serviceName => {
-                    if (serviceName !== "ALL") {
-                        const opt = document.createElement('option');
-                        opt.value = serviceName; opt.textContent = serviceName;
-                        serviceSelect.appendChild(opt);
-                    }
-                });
-                const optGeneral = document.createElement('option');
-                optGeneral.value = "ALL"; optGeneral.textContent = "GENERAL APPOINTMENT / ALL";
-                serviceSelect.appendChild(optGeneral);
-            } else {
-                const opt = document.createElement('option');
-                opt.value = "ALL"; opt.textContent = "GENERAL APPOINTMENT";
-                serviceSelect.appendChild(opt);
-            }
+                return {
+                    dateKey: `${String(sDate.getDate()).padStart(2, '0')} ${months[sDate.getMonth()]} ${sDate.getFullYear()}`,
+                    time: cleanTime,
+                    status: String(item.status || "available").toLowerCase(),
+                    service: item.service ? String(item.service).toUpperCase().trim() : "ALL"
+                };
+            }).filter(Boolean);
 
         } catch (e) {
-            console.error("Fetch error:", e);
-            serviceSelect.innerHTML = '<option value="">OFFLINE</option>';
+            serviceSelect.innerHTML = '<option value="">OFFLINE - RETRYING</option>';
+            setTimeout(loadClinicSchedule, 5000);
         }
     }
 
-    // 2. FILTER DATES WHEN SERVICE IS CHOSEN
     serviceSelect.addEventListener('change', (e) => {
-        const chosenService = e.target.value.toUpperCase();
-        
+        const chosen = e.target.value.toUpperCase();
         dateSelect.innerHTML = '<option value="">CHOOSE DATE</option>';
-        timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
-        timeSelect.disabled = true;
-
-        if (!chosenService) {
-            dateSelect.innerHTML = '<option value="">CHOOSE SERVICE FIRST</option>';
-            dateSelect.disabled = true;
-            return;
-        }
+        if (!chosen) { dateSelect.disabled = true; return; }
 
         dateSelect.disabled = false;
+        let matchingDates = [...new Set(allAvailableSlots
+            .filter(s => (s.service === chosen || s.service === "ALL") && s.status === 'available')
+            .map(s => s.dateKey))];
 
-        let matchingDates = new Set();
-        allAvailableSlots.forEach(slot => {
-            if (slot.service === chosenService || slot.service === "ALL") {
-                if (slot.status !== 'blocked' && slot.status !== 'booked') {
-                    matchingDates.add(slot.dateKey);
-                }
-            }
-        });
-
-        let datesArray = Array.from(matchingDates);
-        datesArray.sort((a, b) => new Date(a) - new Date(b));
-
-        if (datesArray.length === 0) {
+        if (matchingDates.length === 0) {
             dateSelect.innerHTML = '<option value="">NO DATES AVAILABLE</option>';
-            dateSelect.disabled = true;
         } else {
-            datesArray.forEach(date => {
+            matchingDates.sort((a,b) => new Date(a) - new Date(b)).forEach(d => {
                 const opt = document.createElement('option');
-                opt.value = date; opt.textContent = date; 
-                dateSelect.appendChild(opt);
+                opt.value = d; opt.textContent = d; dateSelect.appendChild(opt);
             });
         }
     });
 
-    // 3. FILTER TIMES WHEN DATE IS CHOSEN
     dateSelect.addEventListener('change', (e) => {
-        const selectedDate = e.target.value;
-        const chosenService = serviceSelect.value.toUpperCase();
-        
+        const d = e.target.value;
+        const s = serviceSelect.value.toUpperCase();
         timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
+        if (!d) { timeSelect.disabled = true; return; }
 
-        if (selectedDate) {
-            timeSelect.disabled = false;
-            
-            let validTimes = allAvailableSlots.filter(slot => 
-                slot.dateKey === selectedDate && 
-                (slot.service === chosenService || slot.service === "ALL")
-            );
-
-            validTimes.sort((a, b) => {
-                const timeA = new Date('1970/01/01 ' + a.time).getTime();
-                const timeB = new Date('1970/01/01 ' + b.time).getTime();
-                return timeA - timeB;
-            });
-
-            validTimes.forEach(slot => {
+        timeSelect.disabled = false;
+        allAvailableSlots.filter(slot => slot.dateKey === d && (slot.service === s || slot.service === "ALL"))
+            .sort((a,b) => new Date('1970/01/01 ' + a.time) - new Date('1970/01/01 ' + b.time))
+            .forEach(slot => {
                 const opt = document.createElement('option');
-                opt.value = slot.time;
-                if (slot.status === 'booked' || slot.status === 'blocked') {
-                    opt.textContent = `${slot.time} (BOOKED)`;
-                    opt.disabled = true;
-                } else {
-                    opt.textContent = slot.time;
-                }
+                opt.value = slot.time; opt.textContent = slot.time;
                 timeSelect.appendChild(opt);
             });
-        } else {
-            timeSelect.disabled = true;
-        }
     });
 
-    // ── FORM SUBMIT ───────────────────────────────────────────
     bookingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        submitBtn.disabled = true;
-        submitBtn.textContent = "SENDING...";
-        
-        const formData = new FormData(bookingForm);
-        const params = new URLSearchParams(formData).toString();
-        
+        submitBtn.disabled = true; submitBtn.textContent = "SENDING...";
         try {
-            await fetch(`${API_URL}?${params}`, { method: 'POST', mode: 'no-cors' });
-        } catch (err) {}
-        
-        document.getElementById('booking-form-wrapper').style.display = 'none';
-        document.getElementById('thank-you-page').style.display = 'block';
+            await fetch(`${API_URL}?${new URLSearchParams(new FormData(bookingForm)).toString()}`, { method: 'POST', mode: 'no-cors' });
+            document.getElementById('booking-form-wrapper').style.display = 'none';
+            document.getElementById('thank-you-page').style.display = 'block';
+        } catch (err) { submitBtn.textContent = "RETRY"; submitBtn.disabled = false; }
     });
 
-    // ── INIT ──────────────────────────────────────────────────
     loadClinicSchedule();
 </script>
-
 </body>
 </html>
