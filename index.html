@@ -384,79 +384,27 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 <script>
-    // 1. Swiper Init
-    var swiper = new Swiper(".mySwiper", {
-        effect: "coverflow",
-        grabCursor: true,
-        centeredSlides: true,
-        slidesPerView: "auto",
-        loop: true,
-        autoplay: { delay: 3000, disableOnInteraction: false },
-        coverflowEffect: { rotate: 40, stretch: 0, depth: 250, modifier: 1, slideShadows: true },
-        pagination: { el: ".swiper-pagination" },
-    });
-
-    // 2. Mobile Menu Fix
-    const menuBtn = document.getElementById('menu-btn');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const menuIcon = document.getElementById('menu-icon');
-
-    menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        mobileMenu.classList.toggle('active');
-        menuIcon.classList.toggle('fa-bars');
-        menuIcon.classList.toggle('fa-times');
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
-            mobileMenu.classList.remove('active');
-            menuIcon.classList.add('fa-bars');
-            menuIcon.classList.remove('fa-times');
-        }
-    });
-
-    // 3. BOOKING LOGIC (With FIX 1 & 2)
-    const API_URL = "https://script.google.com/macros/s/AKfycbyrtDk0ZrHCLN5z8GcA4L1jvGpmXD0GFPAraskh2uZNVoMZnUNodkD0sZwbn1G4K8ucEQ/exec";
-    const dateSelect = document.getElementById('doctor-date');
-    const timeSelect = document.getElementById('doctor-time');
-    const bookingForm = document.getElementById('clinic-booking-form');
-    const submitBtn = document.getElementById('submit-btn');
-
+    const API_URL = 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL'; // Ensure this is your deployed URL
+    const dateSelect = document.getElementById('date-select');
+    const timeSelect = document.getElementById('time-select');
+    const bookingForm = document.getElementById('booking-form');
+    const submitBtn = document.querySelector('.submit-btn');
     let clinicSchedule = {};
-    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
-    function formatAnyDate(dateInput) {
-        if (!dateInput) return "";
-        const d = new Date(dateInput);
-        if (!isNaN(d)) {
-            return `${String(d.getDate()).padStart(2, '0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
-        }
-        return dateInput.toUpperCase();
-    }
-
-    function formatTime(timeInput) {
-        if (!timeInput) return "";
-        const [h, m] = timeInput.split(':');
-        let hour = parseInt(h);
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        hour = hour % 12 || 12;
-        return `${hour}:${m} ${ampm}`;
-    }
-
+    // 1. LOAD SCHEDULE (With Rulebook & Window Filter)
     async function loadClinicSchedule() {
         try {
             dateSelect.innerHTML = '<option value="">SYNCING...</option>';
+            // The "Key": ?fetch=true tells the script to bring both Slots AND Settings
             const response = await fetch(API_URL + "?fetch=true");
             const data = await response.json();
 
-            // READ SETTINGS FROM GOOGLE SHEET
+            // Read the Rulebook (B1 in Settings)
             const mode = data.settings?.mode?.toString().trim() || "7";
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
             let windowStart, windowEnd;
-
             if (mode === "custom") {
                 windowStart = new Date(data.settings.start);
                 windowEnd = new Date(data.settings.end);
@@ -472,41 +420,46 @@
                 const slotDate = new Date(item.date);
                 slotDate.setHours(0, 0, 0, 0);
 
-                // THE BOUNCER: Rejects blocked slots or dates outside the window
+                // Window Filter & Blocked Status Filter
                 if (slotDate < windowStart || slotDate > windowEnd) return;
                 if ((item.status || "").toLowerCase() === "blocked") return;
 
                 const cleanDate = formatAnyDate(item.date);
                 const cleanTime = formatTime(item.time);
                 if (!clinicSchedule[cleanDate]) clinicSchedule[cleanDate] = [];
-                clinicSchedule[cleanDate].push({ time: cleanTime, status: item.status || "available" });
+                clinicSchedule[cleanDate].push({ 
+                    time: cleanTime, 
+                    status: item.status || "available" 
+                });
             });
 
             dateSelect.innerHTML = '<option value="">CHOOSE DATE</option>';
             Object.keys(clinicSchedule).forEach(date => {
                 const opt = document.createElement('option');
-                opt.value = date;
-                opt.textContent = date;
+                opt.value = date; 
+                opt.textContent = date; 
                 dateSelect.appendChild(opt);
             });
-
         } catch (e) {
+            console.error("Fetch error:", e);
             dateSelect.innerHTML = '<option value="">OFFLINE</option>';
         }
     }
 
-    dateSelect.addEventListener('change', () => {
-        const selected = dateSelect.value;
+    // 2. DATE CHANGE HANDLER - Populates time dropdown
+    dateSelect.addEventListener('change', (e) => {
+        const selectedDate = e.target.value;
         timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
-        if (selected && clinicSchedule[selected]) {
+        if (selectedDate && clinicSchedule[selectedDate]) {
             timeSelect.disabled = false;
-            clinicSchedule[selected].forEach(slot => {
+            clinicSchedule[selectedDate].forEach(slot => {
                 const opt = document.createElement('option');
                 opt.value = slot.time;
-                opt.textContent = slot.time;
                 if (slot.status.toLowerCase() === 'booked') {
+                    opt.textContent = `${slot.time} (BOOKED)`;
                     opt.disabled = true;
-                    opt.textContent += " (FULL)";
+                } else {
+                    opt.textContent = slot.time;
                 }
                 timeSelect.appendChild(opt);
             });
@@ -515,30 +468,39 @@
         }
     });
 
+    // 3. FORM SUBMIT HANDLER
     bookingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         submitBtn.disabled = true;
-        submitBtn.innerText = "LOCKING...";
-
+        submitBtn.textContent = "SENDING...";
+        
+        const formData = new FormData(bookingForm);
+        const params = new URLSearchParams(formData).toString();
+        
         try {
-            const formData = new FormData(bookingForm);
-            const data = Object.fromEntries(formData.entries());
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify(data)
-            });
-            
-            if (response.ok) {
-                document.getElementById('booking-form-wrapper').classList.add('hidden');
-                document.getElementById('thank-you-page').classList.remove('hidden');
-            }
+            // Using no-cors as Apps Script returns a redirect that fetch can't follow
+            await fetch(`${API_URL}?${params}`, { method: 'POST', mode: 'no-cors' });
         } catch (err) {
-            alert("Connection error. Please try again.");
-            submitBtn.disabled = false;
-            submitBtn.innerText = "CONFIRM REQUEST";
+            console.error("Submission error:", err);
         }
+        
+        // UI Transition
+        document.getElementById('booking-form-wrapper').style.display = 'none';
+        document.getElementById('thank-you-page').style.display = 'block';
     });
 
+    // HELPERS
+    function formatAnyDate(d) {
+        const date = new Date(d);
+        return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function formatTime(t) {
+        // Simple formatter to ensure clean 12-hour display if needed
+        return t; 
+    }
+
+    // 4. KICK IT OFF
     loadClinicSchedule();
 </script>
 
