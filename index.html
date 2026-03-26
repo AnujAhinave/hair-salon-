@@ -39,7 +39,6 @@
 </head>
 <body class="antialiased">
 
-<!-- NAV -->
 <nav class="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative">
         <a href="index.html" class="flex items-center gap-4">
@@ -77,7 +76,6 @@
     </div>
 </nav>
 
-<!-- HERO -->
 <header id="about" class="unified-hero-bg border-b border-gray-100 pt-20 pb-28 scroll-mt-20">
     <div class="max-w-6xl mx-auto px-6 text-center lg:text-left">
         <div class="flex flex-col lg:flex-row items-center justify-between gap-16">
@@ -106,7 +104,6 @@
     </div>
 </header>
 
-<!-- SERVICES -->
 <section id="treatments" class="py-24 bg-white scroll-mt-20">
     <div class="max-w-4xl mx-auto px-6">
         <div class="text-center mb-16">
@@ -160,7 +157,6 @@
     </div>
 </section>
 
-<!-- REVIEWS -->
 <section id="reviews" class="py-24 bg-[#F9F9F9] border-y border-gray-100 overflow-hidden scroll-mt-20">
     <div class="max-w-6xl mx-auto px-6 mb-10 text-center">
         <h2 class="text-3xl md:text-4xl section-title text-gray-900">Client Transformations</h2>
@@ -224,7 +220,6 @@
     </div>
 </section>
 
-<!-- BOOKING -->
 <section id="booking" class="py-24 bg-[#111111] scroll-mt-20">
     <div class="max-w-3xl mx-auto px-6">
         <div id="booking-container" class="bg-[#1A1A1A] rounded-2xl border border-white/10 p-10 md:p-14 shadow-2xl">
@@ -285,7 +280,6 @@
     </div>
 </section>
 
-<!-- MAP -->
 <section class="py-20 bg-white border-t border-gray-100">
     <div class="max-w-6xl mx-auto px-6">
         <div class="text-center mb-12">
@@ -299,7 +293,6 @@
     </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="bg-[#0A0A0A] text-gray-400 py-16 border-t border-white/5">
     <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-12 text-center md:text-left">
         <div>
@@ -352,40 +345,28 @@
         }
     });
 
-    // ── BOOKING LOGIC ─────────────────────────────────────────
-    // *** YOUR LIVE URL — already updated ***
+    // ── DYNAMIC BOOKING LOGIC ─────────────────────────────────
     const API_URL = "https://script.google.com/macros/s/AKfycbxncoZGvFYY80eYOeVMDef9vpLNSbwjnsSN76oFZ2WEeZv0cO-d0IhoBSouFoeEm909rA/exec";
 
-    const dateSelect  = document.getElementById('doctor-date');   // matches HTML id
-    const timeSelect  = document.getElementById('doctor-time');   // matches HTML id
-    const bookingForm = document.getElementById('clinic-booking-form'); // matches HTML id
+    const dateSelect  = document.getElementById('doctor-date');
+    const timeSelect  = document.getElementById('doctor-time');
+    const bookingForm = document.getElementById('clinic-booking-form');
     const submitBtn   = document.getElementById('submit-btn');
 
     let clinicSchedule = {};
     const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
-    function formatAnyDate(dateInput) {
-        if (!dateInput) return "";
-        const d = new Date(dateInput);
-        if (!isNaN(d)) return `${String(d.getDate()).padStart(2,'0')} ${months[d.getMonth()]} ${d.getFullYear()}`;
-        return dateInput.toString().toUpperCase();
-    }
-
-    function formatTime(timeInput) {
-        if (!timeInput) return "";
-        const t = timeInput.toString();
-        // Already has AM/PM — return as-is
-        if (t.includes('AM') || t.includes('PM')) return t.toUpperCase();
-        // 24hr format like "13:00"
-        const parts = t.split(':');
-        if (parts.length >= 2) {
-            let hour = parseInt(parts[0]);
-            const min  = parts[1].substring(0, 2);
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            hour = hour % 12 || 12;
-            return `${hour}:${min} ${ampm}`;
-        }
-        return t;
+    // 1. DYNAMIC DATE PARSER (Handles messy Excel inputs)
+    function parseDateFlexible(dateStr) {
+        if (!dateStr) return null;
+        let d;
+        if (typeof dateStr === 'string' && dateStr.includes("/")) {
+            const p = dateStr.split("/");
+            d = new Date(p[2], p[1] - 1, p[0]);
+        } else { d = new Date(dateStr); }
+        if (isNaN(d.getTime())) return null;
+        d.setHours(0,0,0,0);
+        return d;
     }
 
     // ── LOAD SCHEDULE ─────────────────────────────────────────
@@ -396,56 +377,75 @@
             timeSelect.disabled  = true;
 
             const response = await fetch(API_URL + "?fetch=true");
-            const data     = await response.json();
+            const rawData  = await response.json();
 
-            // Handles BOTH old plain-array AND new {slots, settings} format
-            const slots = Array.isArray(data) ? data : (data.slots || []);
-            const mode  = Array.isArray(data) ? "25"  : (data.settings?.mode?.toString().trim() || "25");
-
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            let windowStart, windowEnd;
-            if (mode === "custom") {
-                windowStart = new Date(data.settings.start);
-                windowEnd   = new Date(data.settings.end);
-            } else {
-                const days  = parseInt(mode) || 25;
-                windowStart = new Date(today);
-                windowEnd   = new Date(today);
-                windowEnd.setDate(today.getDate() + days);
-            }
+            const data = rawData.slots || [];
+            const settings = rawData.settings || {};
 
             clinicSchedule = {};
 
-            slots.forEach(item => {
-                const slotDate = new Date(item.date);
-                slotDate.setHours(0, 0, 0, 0);
+            // --- THE PLACEHOLDER LOGIC ---
+            // Placeholder 1: Pull Start Date from Excel B2 (use today if absolutely empty)
+            let startDate = settings.start ? parseDateFlexible(settings.start) : new Date();
+            if(!startDate) startDate = new Date();
+            startDate.setHours(0,0,0,0);
 
-                // Reject outside window or blocked
-                if (slotDate < windowStart || slotDate > windowEnd) return;
-                if ((item.status || "").toLowerCase() === "blocked") return;
+            // Placeholder 2: Pull Number of Days from Excel B1
+            let daysToAdd = parseInt(settings.mode);
+            if (isNaN(daysToAdd)) daysToAdd = 30; // Failsafe just in case cell is empty
 
-                const cleanDate = formatAnyDate(item.date);
-                const cleanTime = formatTime(item.time);
+            // Calculate end date based on Excel placeholders
+            let endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + (daysToAdd - 1));
+            endDate.setHours(23,59,59,999);
 
-                if (!clinicSchedule[cleanDate]) clinicSchedule[cleanDate] = [];
-                clinicSchedule[cleanDate].push({ time: cleanTime, status: item.status || "available" });
+            data.forEach(item => {
+                const sDate = parseDateFlexible(item.date);
+                if (!sDate) return;
+
+                // FILTER: Only show slots inside your Excel-defined box
+                if (sDate >= startDate && sDate <= endDate) {
+                    const dKey = `${String(sDate.getDate()).padStart(2, '0')} ${months[sDate.getMonth()]} ${sDate.getFullYear()}`;
+                    
+                    // Format time cleanly
+                    let cleanTime = item.time;
+                    const pTime = new Date(item.time);
+                    if (!isNaN(pTime) && item.time.toString().includes('T')) {
+                        cleanTime = pTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+                    }
+                    
+                    if (!clinicSchedule[dKey]) clinicSchedule[dKey] = [];
+                    clinicSchedule[dKey].push({ time: cleanTime, status: String(item.status || "available").toLowerCase() });
+                }
             });
 
+            // --- FRONTEND AUTO-SORT LOGIC ---
+            
+            // 1. Get the dates and sort them chronologically (Jan to Dec)
+            let datesFound = Object.keys(clinicSchedule);
+            datesFound.sort((a, b) => new Date(a) - new Date(b));
+
+            // 2. Sort the times inside each date (Morning to Evening)
+            datesFound.forEach(date => {
+                clinicSchedule[date].sort((a, b) => {
+                    const timeA = new Date('1970/01/01 ' + a.time).getTime();
+                    const timeB = new Date('1970/01/01 ' + b.time).getTime();
+                    return timeA - timeB;
+                });
+            });
+
+            // 3. Populate the Date Dropdown
             dateSelect.innerHTML = '<option value="">CHOOSE DATE</option>';
-            const availableDates = Object.keys(clinicSchedule);
-
-            if (availableDates.length === 0) {
-                dateSelect.innerHTML = '<option value="">NO SLOTS AVAIL.</option>';
-                return;
+            
+            if (datesFound.length === 0) {
+                dateSelect.innerHTML = '<option value="">NO SLOTS AVAILABLE</option>';
+            } else {
+                datesFound.forEach(date => {
+                    const opt = document.createElement('option');
+                    opt.value = date; opt.textContent = date; 
+                    dateSelect.appendChild(opt);
+                });
             }
-
-            availableDates.forEach(date => {
-                const opt = document.createElement('option');
-                opt.value = date; opt.textContent = date;
-                dateSelect.appendChild(opt);
-            });
 
         } catch (e) {
             console.error("Fetch error:", e);
@@ -463,7 +463,7 @@
             clinicSchedule[selectedDate].forEach(slot => {
                 const opt = document.createElement('option');
                 opt.value = slot.time;
-                if (slot.status.toLowerCase() === 'booked') {
+                if (slot.status === 'booked' || slot.status === 'blocked') {
                     opt.textContent = `${slot.time} (BOOKED)`;
                     opt.disabled = true;
                 } else {
