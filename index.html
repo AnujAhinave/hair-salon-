@@ -373,7 +373,7 @@
             <p class="text-[#B8977E] font-bold text-xs uppercase tracking-widest mt-2">Closed on Fridays</p>
         </div>
         <div>
-            <h3 class="font-bold text-sm mb-4 uppercase tracking-widest text-white">Follow on</h3>
+            <h3 class="font-bold text-sm mb-4 uppercase tracking-widest text-white">Follow us</h3>
             <div class="flex justify-center md:justify-start gap-6 text-xl mt-4">
                 <a href="https://www.instagram.com/sufi1602" target="_blank" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
             </div>
@@ -381,51 +381,47 @@
     </div>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
 <script>
-    const API_URL = 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL'; // Ensure this is your deployed URL
+    const API_URL = 'YOUR_GOOGLE_SCRIPT_WEB_APP_URL'; 
     const dateSelect = document.getElementById('date-select');
     const timeSelect = document.getElementById('time-select');
     const bookingForm = document.getElementById('booking-form');
     const submitBtn = document.querySelector('.submit-btn');
     let clinicSchedule = {};
 
-    // 1. LOAD SCHEDULE (With Rulebook & Window Filter)
+    // 1. HYBRID LOAD FUNCTION (Handles Array or Object responses)
     async function loadClinicSchedule() {
         try {
             dateSelect.innerHTML = '<option value="">SYNCING...</option>';
-            // The "Key": ?fetch=true tells the script to bring both Slots AND Settings
+            timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
+            timeSelect.disabled = true;
+
             const response = await fetch(API_URL + "?fetch=true");
             const data = await response.json();
 
-            // Read the Rulebook (B1 in Settings)
-            const mode = data.settings?.mode?.toString().trim() || "7";
+            // Logic: If data is an array, it's the old format. If it has .slots, it's the new format.
+            const slots = Array.isArray(data) ? data : (data.slots || []);
+            const mode = Array.isArray(data) ? "25" : (data.settings?.mode?.toString().trim() || "7");
+
             const today = new Date();
             today.setHours(0, 0, 0, 0);
-
-            let windowStart, windowEnd;
-            if (mode === "custom") {
-                windowStart = new Date(data.settings.start);
-                windowEnd = new Date(data.settings.end);
-            } else {
-                const days = parseInt(mode) || 7;
-                windowStart = new Date(today);
-                windowEnd = new Date(today);
-                windowEnd.setDate(today.getDate() + days);
-            }
+            
+            const windowEnd = new Date(today);
+            windowEnd.setDate(today.getDate() + parseInt(mode));
 
             clinicSchedule = {};
-            data.slots.forEach(item => {
+            
+            slots.forEach(item => {
                 const slotDate = new Date(item.date);
                 slotDate.setHours(0, 0, 0, 0);
-
-                // Window Filter & Blocked Status Filter
-                if (slotDate < windowStart || slotDate > windowEnd) return;
+                
+                // Filter: Only show future dates within the window, skip "Blocked"
+                if (slotDate < today || slotDate > windowEnd) return;
                 if ((item.status || "").toLowerCase() === "blocked") return;
 
                 const cleanDate = formatAnyDate(item.date);
                 const cleanTime = formatTime(item.time);
+                
                 if (!clinicSchedule[cleanDate]) clinicSchedule[cleanDate] = [];
                 clinicSchedule[cleanDate].push({ 
                     time: cleanTime, 
@@ -433,23 +429,33 @@
                 });
             });
 
+            // Populate Date Dropdown
             dateSelect.innerHTML = '<option value="">CHOOSE DATE</option>';
-            Object.keys(clinicSchedule).forEach(date => {
+            const availableDates = Object.keys(clinicSchedule);
+            
+            if (availableDates.length === 0) {
+                dateSelect.innerHTML = '<option value="">NO SLOTS AVAIL.</option>';
+                return;
+            }
+
+            availableDates.forEach(date => {
                 const opt = document.createElement('option');
                 opt.value = date; 
-                opt.textContent = date; 
+                opt.textContent = date;
                 dateSelect.appendChild(opt);
             });
+
         } catch (e) {
             console.error("Fetch error:", e);
             dateSelect.innerHTML = '<option value="">OFFLINE</option>';
         }
     }
 
-    // 2. DATE CHANGE HANDLER - Populates time dropdown
+    // 2. DATE CHANGE HANDLER
     dateSelect.addEventListener('change', (e) => {
         const selectedDate = e.target.value;
         timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
+        
         if (selectedDate && clinicSchedule[selectedDate]) {
             timeSelect.disabled = false;
             clinicSchedule[selectedDate].forEach(slot => {
@@ -478,13 +484,11 @@
         const params = new URLSearchParams(formData).toString();
         
         try {
-            // Using no-cors as Apps Script returns a redirect that fetch can't follow
             await fetch(`${API_URL}?${params}`, { method: 'POST', mode: 'no-cors' });
         } catch (err) {
-            console.error("Submission error:", err);
+            console.error("Submit Error:", err);
         }
         
-        // UI Transition
         document.getElementById('booking-form-wrapper').style.display = 'none';
         document.getElementById('thank-you-page').style.display = 'block';
     });
@@ -496,11 +500,10 @@
     }
 
     function formatTime(t) {
-        // Simple formatter to ensure clean 12-hour display if needed
         return t; 
     }
 
-    // 4. KICK IT OFF
+    // 4. INITIALIZE
     loadClinicSchedule();
 </script>
 
