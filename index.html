@@ -233,6 +233,7 @@
                         <input type="text" name="firstName" placeholder="FULL NAME" required 
                                class="w-full bg-[#2A2A2A] border border-transparent rounded-lg pl-12 pr-6 py-4 text-white focus:border-[#B8977E] outline-none transition uppercase text-[10px] font-bold tracking-widest placeholder:text-gray-500">
                     </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="relative">
                             <i class="fas fa-phone absolute left-5 top-1/2 -translate-y-1/2 text-gray-500"></i>
@@ -245,12 +246,21 @@
                                    class="w-full bg-[#2A2A2A] border border-transparent rounded-lg pl-12 pr-6 py-4 text-white focus:border-[#B8977E] outline-none transition uppercase text-[10px] font-bold tracking-widest placeholder:text-gray-500">
                         </div>
                     </div>
+
+                    <div class="relative group">
+                        <i class="fas fa-cut absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 z-10"></i>
+                        <select id="service-select" name="service" required 
+                                class="w-full border border-transparent rounded-lg pl-12 pr-6 py-4 outline-none appearance-none uppercase text-[10px] font-bold tracking-widest">
+                            <option value="">SELECT TREATMENT</option>
+                        </select>
+                    </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="relative">
                             <i class="fas fa-calendar absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 z-10"></i>
-                            <select id="doctor-date" name="selected_date" required 
-                                    class="w-full border border-transparent rounded-lg pl-12 pr-6 py-4 outline-none appearance-none uppercase text-[10px] font-bold tracking-widest">
-                                <option value="">CHOOSE DATE</option>
+                            <select id="doctor-date" name="selected_date" disabled required 
+                                    class="w-full border border-transparent rounded-lg pl-12 pr-6 py-4 outline-none appearance-none disabled:opacity-30 uppercase text-[10px] font-bold tracking-widest">
+                                <option value="">CHOOSE SERVICE FIRST</option>
                             </select>
                         </div>
                         <div class="relative">
@@ -261,8 +271,10 @@
                             </select>
                         </div>
                     </div>
-                    <textarea name="description" placeholder="SERVICE REQUIRED (HAIRCUT, COLOR, ETC.)" required rows="3"
+                    
+                    <textarea name="description" placeholder="ANY SPECIFIC NOTES OR REQUESTS?" required rows="3"
                               class="w-full bg-[#2A2A2A] border border-transparent rounded-lg px-6 py-4 text-white focus:border-[#B8977E] outline-none transition uppercase text-[10px] font-bold tracking-widest placeholder:text-gray-500"></textarea>
+                    
                     <button type="submit" id="submit-btn" 
                             class="w-full bg-[#B8977E] text-white font-bold py-5 rounded-lg hover:bg-white hover:text-black transition-colors duration-300 uppercase mt-4 tracking-widest text-xs">
                         Confirm Request
@@ -345,18 +357,19 @@
         }
     });
 
-    // ── DYNAMIC BOOKING LOGIC ─────────────────────────────────
-    const API_URL = "https://script.google.com/macros/s/AKfycbws97-uR5CexgACtiqmzLMPZX_tM922bIIT2kcBxLlDgz5aDetaVC1T5f1C5zlUHaDoZQ/exec";
 
+    // ── NEW DYNAMIC BOOKING LOGIC (ALWAYS SHOW TAGS) ──────────
+    const API_URL = "https://script.google.com/macros/s/AKfycbw6yGWxp7ICYKoJbf0CCBvWYsy1PxaPnGgn77oBdruj3oQdPesfm3SxS1J-2C88G_IoZw/exec";
+
+    const serviceSelect = document.getElementById('service-select');
     const dateSelect  = document.getElementById('doctor-date');
     const timeSelect  = document.getElementById('doctor-time');
     const bookingForm = document.getElementById('clinic-booking-form');
     const submitBtn   = document.getElementById('submit-btn');
 
-    let clinicSchedule = {};
+    let allAvailableSlots = []; 
     const months = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
 
-    // 1. DYNAMIC DATE PARSER (Handles messy Excel inputs)
     function parseDateFlexible(dateStr) {
         if (!dateStr) return null;
         let d;
@@ -369,10 +382,12 @@
         return d;
     }
 
-    // ── LOAD SCHEDULE ─────────────────────────────────────────
+    // 1. FETCH DATA & POPULATE SERVICES
     async function loadClinicSchedule() {
         try {
-            dateSelect.innerHTML = '<option value="">SYNCING...</option>';
+            serviceSelect.innerHTML = '<option value="">SYNCING SERVER...</option>';
+            dateSelect.innerHTML = '<option value="">CHOOSE SERVICE FIRST</option>';
+            dateSelect.disabled = true;
             timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
             timeSelect.disabled  = true;
 
@@ -382,85 +397,150 @@
             const data = rawData.slots || [];
             const settings = rawData.settings || {};
 
-            clinicSchedule = {};
-
-            // --- THE PLACEHOLDER LOGIC ---
-            // Placeholder 1: Pull Start Date from Excel B2 (use today if absolutely empty)
             let startDate = settings.start ? parseDateFlexible(settings.start) : new Date();
             if(!startDate) startDate = new Date();
             startDate.setHours(0,0,0,0);
 
-            // Placeholder 2: Pull Number of Days from Excel B1
             let daysToAdd = parseInt(settings.mode);
-            if (isNaN(daysToAdd)) daysToAdd = 30; // Failsafe just in case cell is empty
+            if (isNaN(daysToAdd)) daysToAdd = 30; 
 
-            // Calculate end date based on Excel placeholders
             let endDate = new Date(startDate);
             endDate.setDate(startDate.getDate() + (daysToAdd - 1));
             endDate.setHours(23,59,59,999);
 
+            allAvailableSlots = []; 
+            let activeServices = new Set(); // Backup list
+
+            // Build the slots inventory
             data.forEach(item => {
                 const sDate = parseDateFlexible(item.date);
                 if (!sDate) return;
 
-                // FILTER: Only show slots inside your Excel-defined box
                 if (sDate >= startDate && sDate <= endDate) {
                     const dKey = `${String(sDate.getDate()).padStart(2, '0')} ${months[sDate.getMonth()]} ${sDate.getFullYear()}`;
                     
-                    // Format time cleanly
                     let cleanTime = item.time;
                     const pTime = new Date(item.time);
                     if (!isNaN(pTime) && item.time.toString().includes('T')) {
                         cleanTime = pTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
                     }
                     
-                    if (!clinicSchedule[dKey]) clinicSchedule[dKey] = [];
-                    clinicSchedule[dKey].push({ time: cleanTime, status: String(item.status || "available").toLowerCase() });
+                    const slotStatus = String(item.status || "available").toLowerCase();
+                    const slotService = item.service ? String(item.service).toUpperCase().trim() : "ALL";
+                    
+                    allAvailableSlots.push({
+                        dateKey: dKey,
+                        dateObj: sDate, 
+                        time: cleanTime,
+                        status: slotStatus,
+                        service: slotService
+                    });
+
+                    if(slotStatus !== 'booked' && slotStatus !== 'blocked') {
+                        activeServices.add(slotService);
+                    }
                 }
             });
 
-            // --- FRONTEND AUTO-SORT LOGIC ---
+            // --- THE FIX: ALWAYS SHOW OFFICIAL TAGS FROM VAULT ---
+            serviceSelect.innerHTML = '<option value="">SELECT TREATMENT</option>';
+            let tagsToDisplay = [];
             
-            // 1. Get the dates and sort them chronologically (Jan to Dec)
-            let datesFound = Object.keys(clinicSchedule);
-            datesFound.sort((a, b) => new Date(a) - new Date(b));
+            // Try to pull the official list from the Settings tab first
+            if (settings.services && settings.services.length > 0) {
+                tagsToDisplay = settings.services.map(s => s.toUpperCase());
+            } else if (activeServices.size > 0) {
+                tagsToDisplay = Array.from(activeServices); // Fallback to whatever slots exist
+            }
 
-            // 2. Sort the times inside each date (Morning to Evening)
-            datesFound.forEach(date => {
-                clinicSchedule[date].sort((a, b) => {
-                    const timeA = new Date('1970/01/01 ' + a.time).getTime();
-                    const timeB = new Date('1970/01/01 ' + b.time).getTime();
-                    return timeA - timeB;
+            // Build the Dropdown Menu
+            if (tagsToDisplay.length > 0) {
+                tagsToDisplay.forEach(serviceName => {
+                    if (serviceName !== "ALL") {
+                        const opt = document.createElement('option');
+                        opt.value = serviceName; 
+                        opt.textContent = serviceName;
+                        serviceSelect.appendChild(opt);
+                    }
                 });
-            });
-
-            // 3. Populate the Date Dropdown
-            dateSelect.innerHTML = '<option value="">CHOOSE DATE</option>';
-            
-            if (datesFound.length === 0) {
-                dateSelect.innerHTML = '<option value="">NO SLOTS AVAILABLE</option>';
+                // Add a generic catch-all option
+                const optGeneral = document.createElement('option');
+                optGeneral.value = "ALL"; optGeneral.textContent = "GENERAL APPOINTMENT / ALL";
+                serviceSelect.appendChild(optGeneral);
             } else {
-                datesFound.forEach(date => {
-                    const opt = document.createElement('option');
-                    opt.value = date; opt.textContent = date; 
-                    dateSelect.appendChild(opt);
-                });
+                const opt = document.createElement('option');
+                opt.value = "ALL"; opt.textContent = "GENERAL APPOINTMENT";
+                serviceSelect.appendChild(opt);
             }
 
         } catch (e) {
             console.error("Fetch error:", e);
-            dateSelect.innerHTML = '<option value="">OFFLINE</option>';
+            serviceSelect.innerHTML = '<option value="">OFFLINE</option>';
         }
     }
 
-    // ── DATE → TIME POPULATE ──────────────────────────────────
+    // 2. FILTER DATES WHEN SERVICE IS CHOSEN
+    serviceSelect.addEventListener('change', (e) => {
+        const chosenService = e.target.value.toUpperCase();
+        
+        dateSelect.innerHTML = '<option value="">CHOOSE DATE</option>';
+        timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
+        timeSelect.disabled = true;
+
+        if (!chosenService) {
+            dateSelect.innerHTML = '<option value="">CHOOSE SERVICE FIRST</option>';
+            dateSelect.disabled = true;
+            return;
+        }
+
+        dateSelect.disabled = false;
+
+        let matchingDates = new Set();
+        allAvailableSlots.forEach(slot => {
+            if (slot.service === chosenService || slot.service === "ALL") {
+                if (slot.status !== 'blocked' && slot.status !== 'booked') {
+                    matchingDates.add(slot.dateKey);
+                }
+            }
+        });
+
+        let datesArray = Array.from(matchingDates);
+        datesArray.sort((a, b) => new Date(a) - new Date(b));
+
+        if (datesArray.length === 0) {
+            dateSelect.innerHTML = '<option value="">NO DATES AVAILABLE</option>';
+            dateSelect.disabled = true;
+        } else {
+            datesArray.forEach(date => {
+                const opt = document.createElement('option');
+                opt.value = date; opt.textContent = date; 
+                dateSelect.appendChild(opt);
+            });
+        }
+    });
+
+    // 3. FILTER TIMES WHEN DATE IS CHOSEN
     dateSelect.addEventListener('change', (e) => {
         const selectedDate = e.target.value;
+        const chosenService = serviceSelect.value.toUpperCase();
+        
         timeSelect.innerHTML = '<option value="">SELECT TIME</option>';
 
-        if (selectedDate && clinicSchedule[selectedDate]) {
+        if (selectedDate) {
             timeSelect.disabled = false;
-            clinicSchedule[selectedDate].forEach(slot => {
+            
+            let validTimes = allAvailableSlots.filter(slot => 
+                slot.dateKey === selectedDate && 
+                (slot.service === chosenService || slot.service === "ALL")
+            );
+
+            validTimes.sort((a, b) => {
+                const timeA = new Date('1970/01/01 ' + a.time).getTime();
+                const timeB = new Date('1970/01/01 ' + b.time).getTime();
+                return timeA - timeB;
+            });
+
+            validTimes.forEach(slot => {
                 const opt = document.createElement('option');
                 opt.value = slot.time;
                 if (slot.status === 'booked' || slot.status === 'blocked') {
@@ -479,20 +559,18 @@
     // ── FORM SUBMIT ───────────────────────────────────────────
     bookingForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        submitBtn.disabled     = true;
-        submitBtn.textContent  = "SENDING...";
-
+        submitBtn.disabled = true;
+        submitBtn.textContent = "SENDING...";
+        
         const formData = new FormData(bookingForm);
-        const params   = new URLSearchParams(formData).toString();
-
+        const params = new URLSearchParams(formData).toString();
+        
         try {
             await fetch(`${API_URL}?${params}`, { method: 'POST', mode: 'no-cors' });
-        } catch (err) {
-            console.error("Submit error:", err);
-        }
-
+        } catch (err) {}
+        
         document.getElementById('booking-form-wrapper').style.display = 'none';
-        document.getElementById('thank-you-page').style.display       = 'block';
+        document.getElementById('thank-you-page').style.display = 'block';
     });
 
     // ── INIT ──────────────────────────────────────────────────
