@@ -18,7 +18,6 @@
         :root { --bg-light: #F9F9F9; --text-main: #222222; --accent-gold: #B8977E; --dark-panel: #1A1A1A; }
         body { background-color: var(--bg-light); color: var(--text-main); }
         
-        /* Updated Hero Background Image */
         .unified-hero-bg { 
             background: linear-gradient(rgba(249,249,249,0.92), rgba(249,249,249,0.97)), 
             url('https://raw.githubusercontent.com/AnujAhinave/hair-salon-/main/images%20(1).png'); 
@@ -193,6 +192,30 @@
                     <h4 class="font-bold text-xs uppercase tracking-widest text-gray-900">— Priya S.</h4>
                 </div>
             </div>
+            <div class="swiper-slide border border-gray-100">
+                <img src="https://raw.githubusercontent.com/AnujAhinave/hair-salon-/main/hair%20reviews/4.png" class="w-full h-64 object-cover" alt="Client 4">
+                <div class="p-6 text-center bg-white">
+                    <div class="flex justify-center text-[#FFD700] mb-3 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="text-gray-600 text-sm italic mb-4">"A true luxury experience. They treat grooming like an art form here."</p>
+                    <h4 class="font-bold text-xs uppercase tracking-widest text-gray-900">— Sameer D.</h4>
+                </div>
+            </div>
+            <div class="swiper-slide border border-gray-100">
+                <img src="https://raw.githubusercontent.com/AnujAhinave/hair-salon-/main/hair%20reviews/5.png" class="w-full h-64 object-cover" alt="Client 5">
+                <div class="p-6 text-center bg-white">
+                    <div class="flex justify-center text-[#FFD700] mb-3 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="text-gray-600 text-sm italic mb-4">"Amazing attention to detail. The staff makes you feel so comfortable throughout."</p>
+                    <h4 class="font-bold text-xs uppercase tracking-widest text-gray-900">— Aman R.</h4>
+                </div>
+            </div>
+            <div class="swiper-slide border border-gray-100">
+                <img src="https://raw.githubusercontent.com/AnujAhinave/hair-salon-/main/hair%20reviews/6.png" class="w-full h-64 object-cover" alt="Client 6">
+                <div class="p-6 text-center bg-white">
+                    <div class="flex justify-center text-[#FFD700] mb-3 text-xs"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                    <p class="text-gray-600 text-sm italic mb-4">"Got a fresh look for a wedding. The styling held up perfectly the entire night!"</p>
+                    <h4 class="font-bold text-xs uppercase tracking-widest text-gray-900">— Neha T.</h4>
+                </div>
+            </div>
         </div>
         <div class="swiper-pagination mt-8 relative"></div>
     </div>
@@ -280,7 +303,7 @@
             <p class="text-gray-500 mt-2 text-sm max-w-lg mx-auto">Shop 03, beside Soham Medical, DSK, Kalyan Nagri, Sanglewadi, Bhanusagar, Kalyan West</p>
         </div>
         <div class="rounded-2xl overflow-hidden shadow-lg border border-gray-100 h-96 w-full relative z-10">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3766.456676834164!2d73.125916!3d19.231935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be79589d8137359%3A0x6d8f5d0f6f3e0988!2sSufiyan%20Hair%20Studio!5e0!3m2!1sen!2sin!4v1710345678901!5m2!1sen!2sin" 
+            <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15065.11116666!2d73.123456!3d19.123456!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTnCsDA3JzE4LjAiTiA3M8KwMDcnMjQuNCJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
                 width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
         </div>
     </div>
@@ -397,8 +420,7 @@
                 const sDate = parseDateFlexible(item.date);
                 if (sDate && sDate >= startDate && sDate <= endDate) {
                     const dKey = `${String(sDate.getDate()).padStart(2, '0')} ${months[sDate.getMonth()]} ${sDate.getFullYear()}`;
-                    let cleanTime = item.time;
-                    allAvailableSlots.push({ dateKey: dKey, time: cleanTime, status: String(item.status).toLowerCase(), service: item.service ? String(item.service).toUpperCase().trim() : "ALL" });
+                    allAvailableSlots.push({ dateKey: dKey, time: item.time, status: String(item.status).toLowerCase(), service: item.service ? String(item.service).toUpperCase().trim() : "ALL" });
                     if(item.status !== 'booked' && item.status !== 'blocked') activeServices.add(item.service ? String(item.service).toUpperCase().trim() : "ALL");
                 }
             });
